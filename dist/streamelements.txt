@@ -30,6 +30,15 @@ Fields tab:
       "false": "No"
     }
   },
+  "flipContent": {
+    "type": "dropdown",
+    "label": "Flip border",
+    "value": "true",
+    "options": {
+      "true": "Yes",
+      "false": "No"
+    }
+  },
   "gameName": {
     "type": "text",
     "label": "Game name",

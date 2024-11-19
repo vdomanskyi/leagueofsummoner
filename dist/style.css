@@ -37,6 +37,9 @@ p {
   min-width: 200px;
   max-width: 200px;
 }
+.widget.flip-content .row {
+  flex-direction: row-reverse;
+}
 .widget .border {
   position: absolute;
   z-index: 900;

@@ -50,6 +50,12 @@ p {
 
   @include strict_size(200px, 200px);
 
+  &.flip-content {
+  .row {
+    flex-direction: row-reverse;
+    }
+  }
+
   .border {
     position: absolute;
     z-index: 900;
