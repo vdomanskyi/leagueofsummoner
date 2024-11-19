@@ -40,4 +40,4 @@ Requests are proxied through an **AWS Lambda function**, with the proxy server c
    - After setting up the overlay, allow up to **5 seconds** for data to load.
 
 ## Legal Disclaimer
-All summoner icons, champion icons, league icons and League of Legends data are propertary of Riot Games. LoboBot isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends, Teamfight Tactics. League of Legends, Teamfight Tactics Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
+All summoner icons, champion icons, league icons and League of Legends data are propertary of Riot Games. League of Summoner Widget isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends, Teamfight Tactics. League of Legends, Teamfight Tactics Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
