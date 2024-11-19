@@ -39,5 +39,8 @@ Requests are proxied through an **AWS Lambda function**, with the proxy server c
 5. **Initialize the Widget**
    - After setting up the overlay, allow up to **5 seconds** for data to load.
 
+## How to get Personal API key
+To obtain your Personal API Key, refer to the step-by-step instructions provided in dist/TextForPersonalApiKey.txt. The file contains all the details needed to securely generate your key from the Riot Developer Portal.
+
 ## Legal Disclaimer
 All summoner icons, champion icons, league icons and League of Legends data are propertary of Riot Games. League of Summoner Widget isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends, Teamfight Tactics. League of Legends, Teamfight Tactics Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
