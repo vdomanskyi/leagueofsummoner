@@ -85,7 +85,7 @@ const getUserData = async () => {
 };
 
 const getAssetsUrls = async () => {
-  const url = 'https://raw.githubusercontent.com/vdomanskyi/widget/refs/heads/main/dist/assets.json';
+  const url = 'https://raw.githubusercontent.com/vdomanskyi/leagueofsummoner/refs/heads/main/dist/assets.json';
 
   await $.getJSON(url, (json) => {
     assets = json;
