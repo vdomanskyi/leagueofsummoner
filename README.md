@@ -1,3 +1,5 @@
+![](./example.gif)
+
 # League of Summoner Widget
 
 The **League of Summoner** widget displays real-time data for a summoner, including:
