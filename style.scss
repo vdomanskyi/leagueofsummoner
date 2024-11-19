@@ -54,6 +54,10 @@ p {
     position: absolute;
     z-index: 900;
 
+    &.left-right {
+      z-index: 5000;
+    }
+
     &.flip {
       transform: scale(-1, 1);
     }
