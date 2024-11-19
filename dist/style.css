@@ -41,6 +41,9 @@ p {
   position: absolute;
   z-index: 900;
 }
+.widget .border.left-right {
+  z-index: 5000;
+}
 .widget .border.flip {
   transform: scale(-1, 1);
 }
