@@ -7,7 +7,7 @@
     "dist"
   ],
   "scripts": {
-    "build:styles": "sass src/style.scss dist/style.css"
+    "build:styles": "sass style.scss dist/style.css"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/vdomanskyi/leagueofsummoner/issues"
   },
-  "homepage": "https://github.com/vdomanskyi/leagueofsummoner#readme"
+  "homepage": "https://github.com/vdomanskyi/leagueofsummoner#readme",
+  "devDependencies": {
+    "sass": "^1.81.0"
+  }
 }
