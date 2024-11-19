@@ -1,0 +1,392 @@
+@mixin strict_size($height, $width) {
+  @if $height {
+    height: #{$height};
+    min-height: #{$height};
+    max-height: #{$height};
+  }
+
+  @if $width {
+    width: #{$width};
+    min-width: #{$width};
+    max-width: #{$width};
+  }
+}
+
+@font-face {
+  font-family: BeaufortForLOL;
+  src: url('https://raw.communitydragon.org/latest/game/assets/ux/fonts/beaufortforlol-bold.otf');
+}
+
+:root {
+  --white: #f0e6d2;
+  --yellow: #c89b3c;
+  --blue500: #5383e8;
+  --red600: #e84057;
+  --green: #0ac8b9;
+}
+
+body {
+  overflow: visible !important;
+  margin-top: 100px !important;
+}
+
+* {
+  box-sizing: border-box;
+
+  * ::after,
+  * ::before {
+    box-sizing: border-box;
+  }
+
+  font-family: BeaufortForLOL;
+}
+
+p {
+  margin: 0;
+}
+
+.widget {
+  position: relative;
+
+  @include strict_size(200px, 200px);
+
+  .border {
+    position: absolute;
+    z-index: 900;
+
+    &.flip {
+      transform: scale(-1, 1);
+    }
+  }
+
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    .banner {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  .frame {
+    @include strict_size(200px, 200px);
+    padding: 14px;
+  }
+
+  .content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.row,
+.animation {
+  position: relative;
+  z-index: 1500;
+
+  display: flex;
+  width: 400px;
+}
+
+.frame.general {
+  .content {
+    .avatar {
+      position: absolute;
+      top: -207px;
+      left: -169px;
+      z-index: 1000;
+
+      @include strict_size(512px, 512px);
+
+      transform: scale(0.55);
+
+      .icon,
+      .division {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+
+        transform: translate(-50%, -50%);
+      }
+
+      .division {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        z-index: 50;
+
+        @include strict_size(21px, 100%);
+
+        color: var(--white);
+
+        margin-top: -57px;
+
+        p {
+          margin-right: -1px;
+
+          line-height: 1px;
+          font-size: 21px;
+        }
+      }
+
+      .icon {
+        @include strict_size(120px, 120px);
+
+        border-radius: 100%;
+      }
+
+      .border {
+        position: relative;
+        z-index: 5;
+
+        width: 100%;
+      }
+    }
+
+    .character,
+    .character-stats {
+      padding: 0 5px;
+    }
+
+    .character {
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      z-index: 5;
+
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: column;
+
+      width: 100%;
+      height: 100%;
+
+      padding: {
+        top: 98px;
+      }
+
+      p {
+        text-align: center;
+      }
+
+      .lp {
+        font-size: 14px;
+        line-height: 12px;
+        color: var(--yellow);
+
+        margin: {
+          bottom: 0px;
+        }
+      }
+
+      .username {
+        position: relative;
+
+        @include strict_size(36px, 100%);
+
+        p {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+
+          font-size: 16px;
+          line-height: 14px;
+          color: var(--white);
+
+          transform: translate(-50%, -50%);
+
+          width: 100%;
+        }
+      }
+    }
+
+    .character-stats {
+      position: absolute;
+      left: 0;
+      bottom: 2px;
+      z-index: 10;
+
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      p {
+        font-size: 14px;
+      }
+
+      .total {
+        color: var(--white);
+      }
+
+      .wins,
+      .percent {
+        color: var(--green);
+      }
+
+      .losses {
+        color: var(--red600);
+      }
+    }
+  }
+}
+
+.frame.matches {
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .match {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px 4px;
+
+    &.win {
+      .champion::before {
+        border-color: var(--blue500);
+      }
+
+      .stats {
+        color: var(--blue500);
+      }
+    }
+
+    .champion {
+      position: relative;
+
+      @include strict_size(30px, 30px);
+
+      &::before {
+        content: '';
+
+        display: block;
+
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        border: 2px solid var(--red600);
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .pings {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0 2px;
+
+      img {
+        @include strict_size(10px, 10px);
+      }
+      p {
+        color: var(--yellow);
+        font-size: 12px;
+      }
+    }
+
+    .stats {
+      text-align: center;
+      font-size: 9px;
+      color: var(--red600);
+    }
+  }
+
+  .last-match {
+    display: flex;
+    justify-content: center;
+    gap: 0 8px;
+
+    align-items: center;
+
+    height: 100%;
+
+    .title {
+      font-size: 14px;
+      line-height: 13px;
+      color: var(--white);
+
+      .last {
+        font-size: 23px;
+      }
+    }
+
+    .match {
+      flex-direction: row;
+      gap: 0 8px;
+
+      .champion {
+        @include strict_size(45px, 45px);
+      }
+
+      .stats {
+        font-size: 16px;
+      }
+
+      .pings {
+        img {
+          @include strict_size(12px, 12px);
+        }
+
+        p {
+          font-size: 16px;
+          line-height: 1px;
+        }
+      }
+    }
+  }
+
+  .matches {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px 8px;
+
+    .match {
+      min-width: 39px;
+
+      .stats {
+        font-size: 11px;
+      }
+
+      .pings {
+        position: relative;
+
+        justify-content: center;
+
+        img {
+          @include strict_size(7px, 7px);
+          margin-left: -10px;
+        }
+
+        p {
+          font-size: 11px;
+        }
+      }
+    }
+  }
+}

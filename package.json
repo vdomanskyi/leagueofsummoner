@@ -1,0 +1,22 @@
+{
+  "name": "leagueofsummoner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:styles": "sass src/style.scss dist/style.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vdomanskyi/leagueofsummoner.git"
+  },
+  "author": "Valentyn Domanskyi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vdomanskyi/leagueofsummoner/issues"
+  },
+  "homepage": "https://github.com/vdomanskyi/leagueofsummoner#readme"
+}
