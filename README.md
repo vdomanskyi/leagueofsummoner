@@ -10,8 +10,8 @@ The **League of Summoner** widget displays real-time data for a summoner, includ
 - **Win Percentage**
 - **Match History**
 
-The widget updates data every **15 seconds**.
-**No data is stored on our servers.**
+The widget updates data every **15 seconds**.<br />
+**No data is stored on our servers.**<br />
 Requests are proxied through an **AWS Lambda function**, with the proxy server code available at `dist/lambda.js`.
 
 ---
@@ -33,17 +33,11 @@ Requests are proxied through an **AWS Lambda function**, with the proxy server c
    - Fill in the following fields in the sidebar:
      - **Game Name**
      - **Tag Line**
-     - **Personal API Key**: Obtain your API key from the [Riot Developer Portal](https://developer.riotgames.com/app-type).
+     - **Personal API Key**: Obtain your API key from the [Riot Developer Portal](https://developer.riotgames.com/app-type).<br />
        ⚠️ **Important:** Keep your API key secure. Do not share or display it to others. It is stored as a password-type field in the sidebar but can still be accessed in the **DATA tab**. Ensure the **DATA tab** is never shown to anyone.
 
 5. **Initialize the Widget**
    - After setting up the overlay, allow up to **5 seconds** for data to load.
 
----
-
 ## Legal Disclaimer
-
-- All **summoner icons**, **champion icons**, **league icons**, and **League of Legends data** are proprietary to Riot Games.
-- This widget is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends or Teamfight Tactics.
-- **League of Legends** and **Teamfight Tactics** are trademarks or registered trademarks of Riot Games, Inc.
-- **League of Legends © Riot Games, Inc.**
+All summoner icons, champion icons, league icons and League of Legends data are propertary of Riot Games. LoboBot isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends, Teamfight Tactics. League of Legends, Teamfight Tactics Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
