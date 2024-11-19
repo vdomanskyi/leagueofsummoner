@@ -14,8 +14,6 @@ The widget updates data every **15 seconds**.<br />
 **No data is stored on our servers.**<br />
 Requests are proxied through an **AWS Lambda function**, with the proxy server code available at `dist/lambda.js`.
 
----
-
 ## How to Use
 
 1. **Create an Overlay in StreamElements**
