@@ -261,8 +261,9 @@ const render = async () => {
   const _background = createBackground();
   const _general = renderFrame('general', [createAvatar(), createCharacter(), createCharacterStats()]);
   const _matches = renderFrame('matches', await renderMatches());
+  const _test = renderFrame('test');
 
-  const _row = $('<div>').addClass('row').append([_general, _matches]);
+  const _row = $('<div>').addClass('row').append([_general, _matches, _test]);
 
   $('.row').remove();
   $('.background').remove();
@@ -290,14 +291,15 @@ window.addEventListener('onWidgetLoad', async (obj) => {
 
   _widget.append([r._background, _animation.append(r._row)]);
 
-  gsap.to('.animation', {
-    x: -200,
+  const defaults = {
     duration: 3,
-    repeat: -1,
-    yoyo: true,
-    repeatDelay: pauseDuration,
-    ease: 'power1.inOut',
-  });
+    ease: 'power1.inOut'
+  }
+
+  const timeline = gsap.timeline({ repeat: -1, yoyo: true, delay: pauseDuration, repeatDelay: pauseDuration, defaults });
+
+  timeline.to('.animation', { x: -200 });
+  timeline.to('.animation', { x: -400 }, `+=${pauseDuration}`);
 
   setInterval(async () => {
     const r = await render();
