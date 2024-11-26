@@ -1,6 +1,5 @@
 const lambda = axios.create({
-  baseURL: 'https://gfb4yi67pbkrvi4wbrol7ktlym0uvsqp.lambda-url.eu-north-1.on.aws',
-  headers: { 'Content-Type': 'text/plain' },
+  baseURL: 'http://66.248.207.171:3000/proxy'
 });
 
 let assets = {};
@@ -25,18 +24,18 @@ const requests = {
       '?api_key=' +
       apiKey;
 
-    return lambda.post('/', data);
+    return lambda.post('', { rawPath: data });
   },
   getCharacterList: async (summonerId) => {
     const data =
       'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/' + summonerId + '?api_key=' + apiKey;
 
-    return lambda.post('/', data);
+    return lambda.post('', { rawPath: data });
   },
   getSummonerByPUUID: async (puuid) => {
     const data = 'https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/' + puuid + '?api_key=' + apiKey;
 
-    return lambda.post('/', data);
+    return lambda.post('', { rawPath: data });
   },
 
   match: {
@@ -48,12 +47,12 @@ const requests = {
         count +
         '&api_key=' +
         apiKey;
-      return lambda.post('/', data);
+      return lambda.post('', { rawPath: data });
     },
     getMatchById: (matchId) => {
       const data = 'https://europe.api.riotgames.com/lol/match/v5/matches/' + matchId + '?api_key=' + apiKey;
 
-      return lambda.post('/', data).then((res) => {
+      return lambda.post('', { rawPath: data }).then((res) => {
         matches.push(res.data);
 
         matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
