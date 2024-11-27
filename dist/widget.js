@@ -1,3 +1,6 @@
+// 20 requests every 1 seconds(s)
+// 100 requests every 2 minutes(s)
+
 const _LoS_ = '[League of Summoner]'
 
 const proxy = axios.create({ baseURL: 'http://66.248.207.171:3000/proxy' });
@@ -246,16 +249,17 @@ const renderFrame = (className, node) => {
 const frames = async () => {
   const _general = renderFrame('general', [createAvatar(), createCharacter(), createCharacterStats()]);
   const _matches = renderFrame('matches', await renderMatches());
-  const _test = renderFrame('test');
 
-  const _frames = $('<div>').addClass('row').append([_general, _matches, _test]);
+  const frames = [_general, _matches];
+  const _row = $('<div>').addClass('row').append([...frames, $(frames[0]).clone(true)]);
 
   $('.row').remove();
   $('.background').remove();
 
   return {
     background: createBackground(),
-    frames: _frames.get(0),
+    row: _row.get(0),
+    countFrames: _row.children().length,
   };
 };
 
@@ -266,12 +270,13 @@ const animate = () => {
   const countFrames = row.children().length;
   const frameWidth = width / countFrames;
 
-  const timeline = gsap.timeline({ repeat: -1, defaults: { ease: 'power1.inOut', duration: 3 }})
+  const timeline = gsap.timeline({ repeat: -1, repeatDelay: 0, defaults: { ease: Power1.easeInOut, duration: fields.transitionDuration}})
 
   for (let i = 0; i < countFrames; i++) {
     const gap = (frameWidth * (i)) * -1;
+    const time = i === 1 ? '<' : `>+${fields.pauseDuration}`;
 
-    timeline.to('.animation', { x: gap }, `+=${i ? fields.pauseDuration : 0}`)
+    timeline.to('.animation', { x: gap }, time);
   }
 };
 
@@ -283,26 +288,24 @@ const factory = async () => {
   $('.animation').remove();
   $('.background').remove();
 
-  widget.append([F.background, $('<div>').addClass('animation').append(F.frames)])
+  widget.append([F.background, $('<div>').addClass('animation').append(F.row)])
 
   animate();
 };
 
 /**
- * RENDERING FUNCTION
+ * LOADED WIDGET
  */
 window.addEventListener('onWidgetLoad', async (obj) => {
   fields = {
     ...obj.detail.fieldData,
-    flipBorder: obj.detail.fieldData.flipBorder === 'true',
-    flipContent: obj.detail.fieldData.flipContent === 'true',
+    transitionDuration: obj.detail.fieldData.transitionDuration || 2,
+    flipBorder: obj.detail.fieldData.flipBorder === 'true'
   };
 
-  widget = $('.widget').addClass(fields.flipContent ? 'flip-content' : '').append(createBorder(fields.flipBorder));
+  widget = $('.widget').append(createBorder(fields.flipBorder));
 
   await getAssetsUrls();
 
   factory();
-
-  setInterval(factory, 15000);
 });
