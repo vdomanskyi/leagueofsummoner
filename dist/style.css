@@ -84,7 +84,6 @@ p {
   position: relative;
   z-index: 1500;
   display: flex;
-  width: 400px;
 }
 
 .frame.general .content .avatar {
