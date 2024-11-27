@@ -389,4 +389,47 @@ p {
   font-size: 11px;
 }
 
-/*# sourceMappingURL=style.css.map */
+.frame.session .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.frame.session .content .champions {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+}
+.frame.session .content .champions .title {
+  text-align: center;
+  color: var(--white);
+  width: 100%;
+}
+.frame.session .content .champions .masteries {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.frame.session .content .champions .masteries .mastery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.frame.session .content .champions .masteries .mastery .champion {
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+}
+.frame.session .content .champions .masteries .mastery .points {
+  font-size: 13px;
+  color: var(--yellow);
+}/*# sourceMappingURL=style.css.map */

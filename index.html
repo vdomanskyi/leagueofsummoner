@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
-  <link href="./dist/style.css" rel="stylesheet" />
+  <link href="./style.css" rel="stylesheet" />
 
   <style>
     html body {
@@ -48,7 +48,8 @@
 <script src="./dist/widget.js"></script>
 <script>
 // window.dispatchEvent(new CustomEvent('onWidgetLoad', { detail:  }));
-const detail = {"gameName":"Thors Snoresson","tagLine":"3327","API_KEY":"RGAPI-de3e1c8e-ba63-4e95-8691-483e0e22bb48","flipBorder":"false","pauseDuration":3,"flipContent":"false", "flipBorder":"false"};
+// const detail = {"gameName":"Thors Snoresson","tagLine":"3327","API_KEY":"RGAPI-de3e1c8e-ba63-4e95-8691-483e0e22bb48","flipBorder":"false","pauseDuration":3,"flipContent":"false", "flipBorder":"false"};
+const detail = {"gameName":"CasusCloud","tagLine":"EUW","API_KEY":"RGAPI-de3e1c8e-ba63-4e95-8691-483e0e22bb48","flipBorder":"false","pauseDuration":3,"flipContent":"false", "flipBorder":"false"};
 setTimeout(() => {
   window.dispatchEvent(new CustomEvent('onWidgetLoad', { detail: { fieldData: detail } }))
 }, 1000)

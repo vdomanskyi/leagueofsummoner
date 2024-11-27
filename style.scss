@@ -17,9 +17,21 @@
   src: url('https://raw.communitydragon.org/latest/game/assets/ux/fonts/beaufortforlol-bold.otf');
 }
 
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform:  rotate(360deg);
+  }
+}
+
 :root {
   --white: #f0e6d2;
   --yellow: #c89b3c;
+  --gold500: #785A28;
+  --gold700: #32281E;
   --blue500: #5383e8;
   --red600: #e84057;
   --green: #0ac8b9;
@@ -50,6 +62,44 @@ p {
 
   @include strict_size(200px, 200px);
 
+  &.loading {
+    --loading-size: 75px;
+    --loading-border: 4px;
+
+    position: relative;
+
+    &::before {
+      position: absolute;
+      top: calc(50% - (var(--loading-size) / 2));
+      left: calc(50% - (var(--loading-size) / 2));
+
+      content: '';
+
+      display: block;
+
+      @include strict_size(var(--loading-size), var(--loading-size));
+
+      border: var(--loading-border) solid var(--yellow);
+      border-radius: 100%;
+      border-right-color: var(--gold500);
+
+      transform-origin: center center;
+      animation: loading 1s infinite linear;
+    }
+
+    &::after {
+      content: '';
+
+      display: block;
+
+      @include strict_size(100%, 100%);
+
+      border: var(--loading-border) solid var(--gold700);
+
+      background-color: rgba($color: #dcb666, $alpha: 0.3);
+    }
+  }
+
   &.flip-content {
   .row {
     flex-direction: row-reverse;
@@ -58,6 +108,8 @@ p {
 
   .border {
     position: absolute;
+    top: 0;
+    left: 0;
     z-index: 900;
 
     &.left-right {
@@ -394,6 +446,57 @@ p {
 
         p {
           font-size: 11px;
+        }
+      }
+    }
+  }
+}
+
+.frame.session {
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    .champions {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: 4px;
+
+      width: 100%;
+
+      .title {
+        text-align: center;
+        color: var(--white);
+
+        width: 100%;
+      }
+
+      .masteries {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        width: 100%;
+
+        .mastery {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+
+          .champion {
+            @include strict_size(50px, 50px);
+          }
+
+          .points {
+            font-size: 13px;
+            color: var(--yellow);
+          }
         }
       }
     }
