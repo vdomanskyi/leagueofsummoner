@@ -395,15 +395,53 @@ p {
   align-items: center;
   justify-content: space-between;
 }
+.frame.session .content .session-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+}
+.frame.session .content .session-container .session-title {
+  font-size: 18px;
+  text-align: center;
+  color: var(--white);
+}
+.frame.session .content .session-container .session-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value .win {
+  color: var(--green);
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value .total {
+  color: var(--white);
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value .losses {
+  color: var(--red600);
+}
+.frame.session .content .session-container .session-stats .session-kda .value {
+  color: var(--yellow);
+}
 .frame.session .content .champions {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 4px;
+  gap: 6px;
   width: 100%;
 }
 .frame.session .content .champions .title {
+  font-size: 18px;
   text-align: center;
   color: var(--white);
   width: 100%;

@@ -459,16 +459,65 @@ p {
     align-items: center;
     justify-content: space-between;
 
+    .session-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+
+      width: 100%;
+
+      .session-title {
+        font-size: 18px;
+        text-align: center;
+        color: var(--white);
+      }
+
+      .session-stats {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+
+        width: 100%;
+
+        .session-win-losses {
+          .value {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            .win {
+              color: var(--green)
+            }
+            .total {
+              color: var(--white)
+            }
+            .losses {
+              color: var(--red600)
+            }
+          }
+        }
+
+        .session-kda {
+          .value {
+            color: var(--yellow);
+          }
+        }
+      }
+    }
+
     .champions {
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: flex-start;
-      gap: 4px;
+      gap: 6px;
 
       width: 100%;
 
       .title {
+        font-size: 18px;
         text-align: center;
         color: var(--white);
 
