@@ -1,5 +1,6 @@
 const lambda = axios.create({
-  baseURL: 'http://66.248.207.171:3000/proxy'
+  baseURL: 'https://gfb4yi67pbkrvi4wbrol7ktlym0uvsqp.lambda-url.eu-north-1.on.aws',
+  headers: { 'Content-Type': 'text/plain' },
 });
 
 let assets = {};
