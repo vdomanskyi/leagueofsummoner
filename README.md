@@ -27,7 +27,7 @@ Requests are proxied through an **AWS Lambda function**, with the proxy server c
    - Ensure all tabs not mentioned in the file remain **empty**.
 
 3. **Update the Widget Version**
-   - Replace the placeholder `LATEST` in the copied code with the **1.0.7**
+   - Replace the placeholder `LATEST` in the copied code with the **1.0.8**
 
 4. **Configure Sidebar Fields**
    - Fill in the following fields in the sidebar:

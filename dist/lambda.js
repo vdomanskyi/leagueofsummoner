@@ -1,16 +1,15 @@
 import http from "https";
 
 export const handler = async (event) => {
-  const rawPath = event.body;
+  const { rawPath } = JSON.parse(event.body);
 
   if (!rawPath.startsWith('https://')) {
     return {
       statusCode: 400,
       event,
-      body: `${JSON.stringify(event.body)} Invalid URL. Only HTTP is supported, and the URL must start with https://`,
+      body: `${JSON.stringify(event.body)} Invalid URL. URL must start with https://`,
     };
   }
-
 
   return await new Promise((resolve) => {
     const req = http.request(rawPath, (res) => {
