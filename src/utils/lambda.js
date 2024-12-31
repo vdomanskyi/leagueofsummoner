@@ -7,10 +7,9 @@ export const handler = async (event) => {
     return {
       statusCode: 400,
       event,
-      body: `${JSON.stringify(event.body)} Invalid URL. Only HTTP is supported, and the URL must start with https://`,
+      body: `${JSON.stringify(event.body)} Only HTTP is supported, and the URL must start with https://`,
     };
   }
-
 
   return await new Promise((resolve) => {
     const req = http.request(rawPath, (res) => {
