@@ -3,7 +3,7 @@ import { Match } from './match.interface';
 export interface Detail {
   detail: {
     fieldData: Fields;
-  }
+  };
 }
 
 export type Assets = {
@@ -12,8 +12,8 @@ export type Assets = {
   bannerFolder: string;
   championIcons: string;
   baitPing: string;
-  banner: Record<RANKED, string>
-  ranked: Record<RANKED, string>
+  banner: Record<RANKED, string>;
+  ranked: Record<RANKED, string>;
 };
 
 export enum RANKED {
@@ -31,6 +31,7 @@ export enum RANKED {
 
 export interface Fields {
   pauseDuration: number;
+  transitionDuration: number;
   flipBorder: boolean;
   regionalRouting: string;
   platformRouting: string;
@@ -77,5 +78,3 @@ export interface Summoner {
   revisionDate: number;
   summonerLevel: number;
 }
-
-export type $NodeList = JQuery.htmlString | JQuery.TypeOrArray<JQuery.Node | JQuery<JQuery.Node>>

@@ -1,91 +1,88 @@
-// /**
-//  * FRAME: MATCHES
-//  */
-// const renderMatches = async () => {
-//   let lastMatch = null;
-//   let previousMatches = [];
+import { Match, Participant } from 'src/interfaces/match.interface';
+import { Assets, Data, Fields, User } from 'src/interfaces/other.interface';
 
-//   await Promise.all(data.matchIds.map((matchId, index) => {
-//     return requests.match.getMatchById(matchId).then((res) => {
-//       !index ? lastMatch = res.data : previousMatches.push(res.data);
-//     })
-//   }));
+import requests from '../requests';
 
-//   previousMatches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+const getParticipant = (user: User, match: Match) =>
+  match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
 
-//   const _lastMatch = createLastMatch(lastMatch);
-//   const _previousMatches = $('<div>').addClass('matches').append(previousMatches.map((m) => createMatch(m)));
+const createMatch = (assets: Assets, participant: Participant) => {
+  const countPings = (Object.keys(participant) as (keyof Participant)[])
+    .filter((k) => k.toLowerCase().includes('pings'))
+    .reduce((sum, key) => sum + Number(participant[key]), 0);
 
-//   return [_lastMatch, _previousMatches];
-// };
+  const _match = $('<div>').addClass('match');
 
-// const createLastMatch = (match) => {
-//   $('.last-match').remove();
+  const _champion = $('<div>').addClass('champion');
+  const _matchStats = $('<div>').addClass('match-stats');
+  const _stats = $('<p>').addClass('stats');
 
-//   const _lastMatch = $('<div>').addClass('last-match');
+  const _bait = $('<img>').addClass('bait').attr('src', assets.baitPing);
+  const _count = $('<p>').text(`${countPings}`);
+  const _pings = $('<div>').addClass('pings');
 
-//   const _title = $('<p>').addClass('title');
-//   const _last = $('<span>').addClass('last').text('Last');
-//   const _match = $('<span>').addClass('match').text('match:');
+  _stats.text(`${participant.kills}/${participant.deaths}/${participant.assists}`);
+  _pings.append([_bait, _count]);
 
-//   _title.append([_last.get(0), _match.get(0)]);
+  _champion.append($('<img>').attr('src', `${assets.championIcons}/${participant.championId}.png`));
+  _matchStats.append([_stats, _pings]);
 
-//   _lastMatch.append(_title.get(0), createMatch(match));
+  _match.append([_champion, _matchStats]);
 
-//   return _lastMatch.get(0);
-// };
+  if (participant.win) _match.addClass('win');
 
-// const createMatch = (match) => {
-//   if (!match) return;
+  return _match;
+};
 
-//   const participant = match.info.participants.find(
-//     (p) => p.riotIdGameName === data.user.gameName && p.riotIdTagline === data.user.tagLine
-//   );
+const createLastMatch = (assets: Assets, participant: Participant) => {
+  $('.last-match').remove();
 
-//   const countPings =
-//     participant.commandPings +
-//     participant.dangerPings +
-//     participant.enemyMissingPings +
-//     participant.enemyVisionPings +
-//     participant.getBackPings +
-//     participant.holdPings +
-//     participant.needVisionPings +
-//     participant.onMyWayPings +
-//     participant.pushPings +
-//     participant.retreatPings +
-//     participant.visionClearedPings +
-//     participant.allInPings +
-//     participant.basicPings +
-//     participant.assistMePings;
+  const _lastMatch = $('<div>').addClass('last-match');
 
-//   const _match = $('<div>').addClass('match');
+  const _title = $('<p>').addClass('title');
+  const _last = $('<span>').addClass('last').text('Last');
 
-//   const _champion = $('<div>')
-//     .addClass('champion')
-//     .append($('<img>').attr('src', `${assets.championIcons}/${participant.championId}.png`));
+  const _match = $('<span>').addClass('match').text('match:');
 
-//   const _matchStats = $('<div>').addClass('match-stats');
+  _title.append([_last, _match]);
 
-//   const _stats = $('<p>').addClass('stats').text(`${participant.kills}/${participant.deaths}/${participant.assists}`);
+  _lastMatch.append(_title, createMatch(assets, participant));
 
-//   const _pings = $('<div>').addClass('pings'),
-//     _bait = $('<img>').addClass('bait').attr('src', assets.baitPing),
-//     _countPings = $('<p>').text(`${countPings}`);
+  return _lastMatch;
+};
 
-//   _pings.append([_bait.get(0), _countPings.get(0)]);
-//   _matchStats.append([_stats.get(0), _pings.get(0)]);
+export default async (_LoS_: string, assets: Assets, { user }: Data, fields: Fields) => {
+  if (!user) return;
 
-//   _match.append([_champion.get(0), _matchStats.get(0)]);
+  const matches: Match[] = [];
 
-//   if (participant.win) _match.addClass('win');
+  const _list: Array<JQuery<HTMLElement>> = [];
+  const _previousMatches: Array<JQuery<HTMLElement>> = [];
 
-//   addDataParticipantToStore(participant)
+  let _lastMatch: JQuery<HTMLElement> | null = null;
 
-//   return _match.get(0);
-// };
+  await Promise.all(
+    data.matchIds.map((id) =>
+      requests.match.getMatchById(fields, id).then((res) => {
+        matches.push(res.data);
+      })
+    )
+  );
 
-// const addDataParticipantToStore = (participant) => {
-//   participant.win ? session.win.add() : session.losses.add();
+  matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
 
-//   session.kda.push(participant.challenges.kda);
-// }
+  matches.forEach((match, index) => {
+    const participant = getParticipant(user, match);
+
+    if (!participant) return;
+
+    index
+      ? _previousMatches.push(createMatch(assets, participant))
+      : (_lastMatch = createLastMatch(assets, participant));
+  });
+
+  if (_lastMatch) _list.push(_lastMatch);
+  _list.push(..._previousMatches);
+
+  return _list;
+};

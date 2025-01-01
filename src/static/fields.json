@@ -1,8 +1,13 @@
 {
   "pauseDuration": {
     "type": "number",
-    "label": "Swap pause duration (in seconds)",
+    "label": "Swap pause duration (in milliseconds)",
     "value": 5000
+  },
+  "transitionDuration": {
+    "type": "number",
+    "label": "Transition pause duration (in milliseconds)",
+    "value": 3000
   },
   "flipBorder": {
     "type": "dropdown",

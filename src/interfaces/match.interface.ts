@@ -3,13 +3,13 @@ export interface Match {
   info: Info;
 }
 
-interface Metadata {
+export interface Metadata {
   dataVersion: string;
   matchId: string;
   participants: string[];
 }
 
-interface Info {
+export interface Info {
   endOfGameResult: string;
   gameCreation: number;
   gameDuration: number;
@@ -55,7 +55,7 @@ interface Ban {
   pickTurn: number;
 }
 
-interface Participant {
+export interface Participant {
   allInPings: number;
   assistMePings: number;
   assists: number;
