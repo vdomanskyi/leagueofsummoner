@@ -13,9 +13,10 @@
     "paths": {},
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "allowImportingTsExtensions": true,
-    "emitDeclarationOnly": true,
-    "declaration":true
+    "plugins": [
+      { "transform": "typescript-transform-paths" },
+      { "transform": "typescript-transform-paths", "afterDeclarations": true }
+    ]
   },
   "include": ["src/**/*", "global.d.ts"],
   "exclude": ["node_modules", "dist"]

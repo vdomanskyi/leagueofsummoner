@@ -8,11 +8,12 @@
   ],
   "scripts": {
     "build": "run-s build:**",
-    "convert": "npx tsc --outDir ./dist/src",
-    "build:styles": "sass src/style.scss dist/src/style.css",
-    "build:widget": "uglifyjs src/widget.js -o dist/src/widget.js",
-    "build:doc": "node utils/update_streamelements.js",
-    "build:publish": "npm publish"
+    "build:widget": "npx tsc --outDir ./dist",
+    "build:styles": "sass src/style.scss dist/style.css",
+    "build:extension": "node src/utils/add_js_extension.js",
+    "uglifyjs": "uglifyjs src/widget.js -o dist/widget.js",
+    "1build:doc": "node src/utils/update_streamelements.js",
+    "1build:publish": "npm publish"
   },
   "repository": {
     "type": "git",
@@ -27,9 +28,11 @@
   "devDependencies": {
     "@types/axios": "^0.14.4",
     "fs-extra": "^11.2.0",
+    "glob": "^11.0.0",
     "npm-run-all2": "^7.0.2",
     "sass": "^1.81.0",
     "typescript": "^5.7.2",
+    "typescript-transform-paths": "^3.5.3",
     "uglify-js": "^3.19.3"
   },
   "dependencies": {

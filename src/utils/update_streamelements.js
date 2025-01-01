@@ -10,4 +10,4 @@ const textPath = path.resolve(__dirname, '../dist/streamelements.txt');
 const text = fsx.readFileSync(textPath, 'utf-8');
 const pkg = fsx.readJSONSync('./package.json');
 
-fsx.writeFile(textPath, text.replace( /leagueofsummoner@\d+\.\d+\.\d+/g, `leagueofsummoner@${pkg.version}`), 'utf-8');
+fsx.writeFile(textPath, text.replace(/leagueofsummoner@\d+\.\d+\.\d+/g, `leagueofsummoner@${pkg.version}`), 'utf-8');
