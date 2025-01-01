@@ -1,0 +1,475 @@
+@font-face {
+  font-family: BeaufortForLOL;
+  src: url("https://raw.communitydragon.org/latest/game/assets/ux/fonts/beaufortforlol-bold.otf");
+}
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+:root {
+  --white: #f0e6d2;
+  --yellow: #c89b3c;
+  --gold500: #785A28;
+  --gold700: #32281E;
+  --blue500: #5383e8;
+  --red600: #e84057;
+  --green: #0ac8b9;
+}
+
+body {
+  overflow: visible !important;
+  margin-top: 100px !important;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: BeaufortForLOL;
+}
+* * ::after,
+* * ::before {
+  box-sizing: border-box;
+}
+
+p {
+  margin: 0;
+}
+
+.widget {
+  position: relative;
+  height: 200px;
+  min-height: 200px;
+  max-height: 200px;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+}
+.widget.loading {
+  --loading-size: 75px;
+  --loading-border: 4px;
+  position: relative;
+}
+.widget.loading::before {
+  position: absolute;
+  top: calc(50% - var(--loading-size) / 2);
+  left: calc(50% - var(--loading-size) / 2);
+  content: "";
+  display: block;
+  height: var(--loading-size);
+  min-height: var(--loading-size);
+  max-height: var(--loading-size);
+  width: var(--loading-size);
+  min-width: var(--loading-size);
+  max-width: var(--loading-size);
+  border: var(--loading-border) solid var(--yellow);
+  border-radius: 100%;
+  border-right-color: var(--gold500);
+  transform-origin: center center;
+  animation: loading 1s infinite linear;
+}
+.widget.loading::after {
+  content: "";
+  display: block;
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  border: var(--loading-border) solid var(--gold700);
+  background-color: rgba(220, 182, 102, 0.3);
+}
+.widget.flip-content .row {
+  flex-direction: row-reverse;
+}
+.widget .border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 900;
+}
+.widget .border.left-right {
+  z-index: 5000;
+}
+.widget .border.flip {
+  transform: scale(-1, 1);
+}
+.widget .background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.widget .background .banner {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.widget .frame {
+  height: 200px;
+  min-height: 200px;
+  max-height: 200px;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  padding: 14px;
+}
+.widget .content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.row,
+.animation {
+  position: relative;
+  z-index: 1500;
+  display: flex;
+}
+
+.frame.general .content .avatar {
+  position: absolute;
+  top: -207px;
+  left: -169px;
+  z-index: 1000;
+  height: 512px;
+  min-height: 512px;
+  max-height: 512px;
+  width: 512px;
+  min-width: 512px;
+  max-width: 512px;
+  transform: scale(0.55);
+}
+.frame.general .content .avatar .icon,
+.frame.general .content .avatar .division {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.frame.general .content .avatar .division {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  height: 21px;
+  min-height: 21px;
+  max-height: 21px;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  color: var(--white);
+  margin-top: -57px;
+}
+.frame.general .content .avatar .division p {
+  margin-right: -1px;
+  line-height: 1px;
+  font-size: 21px;
+}
+.frame.general .content .avatar .icon {
+  height: 120px;
+  min-height: 120px;
+  max-height: 120px;
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+  border-radius: 100%;
+}
+.frame.general .content .avatar .border {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+}
+.frame.general .content .character,
+.frame.general .content .character-stats {
+  padding: 0 5px;
+}
+.frame.general .content .character {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding-top: 98px;
+}
+.frame.general .content .character p {
+  text-align: center;
+}
+.frame.general .content .character .lp {
+  font-size: 14px;
+  line-height: 12px;
+  color: var(--yellow);
+  margin-bottom: 0px;
+}
+.frame.general .content .character .username {
+  position: relative;
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+}
+.frame.general .content .character .username p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 16px;
+  line-height: 14px;
+  color: var(--white);
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+.frame.general .content .character-stats {
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.frame.general .content .character-stats p {
+  font-size: 14px;
+}
+.frame.general .content .character-stats .total {
+  color: var(--white);
+}
+.frame.general .content .character-stats .wins,
+.frame.general .content .character-stats .percent {
+  color: var(--green);
+}
+.frame.general .content .character-stats .losses {
+  color: var(--red600);
+}
+
+.frame.matches .content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.frame.matches .match {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2px 4px;
+}
+.frame.matches .match.win .champion::before {
+  border-color: var(--blue500);
+}
+.frame.matches .match.win .stats {
+  color: var(--blue500);
+}
+.frame.matches .match .champion {
+  position: relative;
+  height: 30px;
+  min-height: 30px;
+  max-height: 30px;
+  width: 30px;
+  min-width: 30px;
+  max-width: 30px;
+}
+.frame.matches .match .champion::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--red600);
+}
+.frame.matches .match .champion img {
+  width: 100%;
+  height: 100%;
+}
+.frame.matches .match .pings {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0 2px;
+}
+.frame.matches .match .pings img {
+  height: 10px;
+  min-height: 10px;
+  max-height: 10px;
+  width: 10px;
+  min-width: 10px;
+  max-width: 10px;
+}
+.frame.matches .match .pings p {
+  color: var(--yellow);
+  font-size: 12px;
+}
+.frame.matches .match .stats {
+  text-align: center;
+  font-size: 9px;
+  color: var(--red600);
+}
+.frame.matches .last-match {
+  display: flex;
+  justify-content: center;
+  gap: 0 8px;
+  align-items: center;
+  height: 100%;
+}
+.frame.matches .last-match .title {
+  font-size: 14px;
+  line-height: 13px;
+  color: var(--white);
+}
+.frame.matches .last-match .title .last {
+  font-size: 23px;
+}
+.frame.matches .last-match .match {
+  flex-direction: row;
+  gap: 0 8px;
+}
+.frame.matches .last-match .match .champion {
+  height: 45px;
+  min-height: 45px;
+  max-height: 45px;
+  width: 45px;
+  min-width: 45px;
+  max-width: 45px;
+}
+.frame.matches .last-match .match .stats {
+  font-size: 16px;
+}
+.frame.matches .last-match .match .pings img {
+  height: 12px;
+  min-height: 12px;
+  max-height: 12px;
+  width: 12px;
+  min-width: 12px;
+  max-width: 12px;
+}
+.frame.matches .last-match .match .pings p {
+  font-size: 16px;
+  line-height: 1px;
+}
+.frame.matches .matches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 8px;
+}
+.frame.matches .matches .match {
+  min-width: 39px;
+}
+.frame.matches .matches .match .stats {
+  font-size: 11px;
+}
+.frame.matches .matches .match .pings {
+  position: relative;
+  justify-content: center;
+}
+.frame.matches .matches .match .pings img {
+  height: 7px;
+  min-height: 7px;
+  max-height: 7px;
+  width: 7px;
+  min-width: 7px;
+  max-width: 7px;
+  margin-left: -10px;
+}
+.frame.matches .matches .match .pings p {
+  font-size: 11px;
+}
+
+.frame.session .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.frame.session .content .session-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+}
+.frame.session .content .session-container .session-title {
+  font-size: 18px;
+  text-align: center;
+  color: var(--white);
+}
+.frame.session .content .session-container .session-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value .win {
+  color: var(--green);
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value .total {
+  color: var(--white);
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value .losses {
+  color: var(--red600);
+}
+.frame.session .content .session-container .session-stats .session-kda .value {
+  color: var(--yellow);
+}
+.frame.session .content .champions {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+}
+.frame.session .content .champions .title {
+  font-size: 18px;
+  text-align: center;
+  color: var(--white);
+  width: 100%;
+}
+.frame.session .content .champions .masteries {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.frame.session .content .champions .masteries .mastery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.frame.session .content .champions .masteries .mastery .champion {
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+}
+.frame.session .content .champions .masteries .mastery .points {
+  font-size: 13px;
+  color: var(--yellow);
+}
+
+/*# sourceMappingURL=style.css.map */

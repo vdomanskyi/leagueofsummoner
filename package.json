@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "run-s build:**",
+    "build:remove": "rm -rf dist",
     "build:widget": "npx tsc --outDir ./dist",
     "build:styles": "sass src/style.scss dist/style.css",
     "build:extension": "node src/utils/add_js_extension.js",

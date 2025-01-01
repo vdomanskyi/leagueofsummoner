@@ -6,7 +6,7 @@ const createAvatar = (assets: Assets, summoner: Summoner, character: Character, 
   const _icon = $('<img>').addClass('icon').attr('src', `${assets.profileIcon}/${summoner.profileIconId}.jpg`);
   const _ranked = $('<img>').addClass('ranked').attr('src', `${assets.rankedFolder}/${assets.ranked[character.tier]}`);
 
-  if (hasDivisions) _avatar.append($('<div>').addClass('division').append($('<p>').text(character.tier)));
+  if (hasDivisions) _avatar.append($('<div>').addClass('division').append($('<p>').text(character.rank)));
 
   _avatar.append([_ranked, _icon]);
 

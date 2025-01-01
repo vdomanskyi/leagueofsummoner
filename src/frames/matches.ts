@@ -51,7 +51,7 @@ const createLastMatch = (assets: Assets, participant: Participant) => {
   return _lastMatch;
 };
 
-export default async (_LoS_: string, assets: Assets, { user }: Data, fields: Fields) => {
+export default async (_LoS_: string, assets: Assets, { user, matchIds }: Data, fields: Fields) => {
   if (!user) return;
 
   const matches: Match[] = [];
@@ -62,7 +62,7 @@ export default async (_LoS_: string, assets: Assets, { user }: Data, fields: Fie
   let _lastMatch: JQuery<HTMLElement> | null = null;
 
   await Promise.all(
-    data.matchIds.map((id) =>
+    matchIds.map((id) =>
       requests.match.getMatchById(fields, id).then((res) => {
         matches.push(res.data);
       })
