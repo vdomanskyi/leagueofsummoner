@@ -13,8 +13,8 @@
 :root {
   --white: #f0e6d2;
   --yellow: #c89b3c;
-  --gold500: #785A28;
-  --gold700: #32281E;
+  --gold500: #785a28;
+  --gold700: #32281e;
   --blue500: #5383e8;
   --red600: #e84057;
   --green: #0ac8b9;
@@ -181,7 +181,7 @@ p {
   max-width: 120px;
   border-radius: 100%;
 }
-.frame.general .content .avatar .border {
+.frame.general .content .avatar .ranked {
   position: relative;
   z-index: 5;
   width: 100%;

@@ -26,7 +26,7 @@ export enum RANKED {
   DIAMOND = 'DIAMOND',
   MASTER = 'MASTER',
   GRANDMASTER = 'GRANDMASTER',
-  CHALLENGE = 'CHALLENGE',
+  CHALLENGER = 'CHALLENGER',
 }
 
 export interface Fields {

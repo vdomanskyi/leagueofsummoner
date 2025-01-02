@@ -23,15 +23,15 @@
   }
 
   100% {
-    transform:  rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
 :root {
   --white: #f0e6d2;
   --yellow: #c89b3c;
-  --gold500: #785A28;
-  --gold700: #32281E;
+  --gold500: #785a28;
+  --gold700: #32281e;
   --blue500: #5383e8;
   --red600: #e84057;
   --green: #0ac8b9;
@@ -101,8 +101,8 @@ p {
   }
 
   &.flip-content {
-  .row {
-    flex-direction: row-reverse;
+    .row {
+      flex-direction: row-reverse;
     }
   }
 
@@ -207,7 +207,7 @@ p {
         border-radius: 100%;
       }
 
-      .border {
+      .ranked {
         position: relative;
         z-index: 5;
 
@@ -488,13 +488,13 @@ p {
             justify-content: center;
             gap: 8px;
             .win {
-              color: var(--green)
+              color: var(--green);
             }
             .total {
-              color: var(--white)
+              color: var(--white);
             }
             .losses {
-              color: var(--red600)
+              color: var(--red600);
             }
           }
         }

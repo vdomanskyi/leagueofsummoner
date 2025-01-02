@@ -31,7 +31,7 @@ const createCharacterStats = (character) => {
     _characterStats.append([_wins, _total, _losses]);
     return _characterStats;
 };
-export default async (_LoS_, assets, { summoner, user, character }, hasDivisions) => {
+export default async (assets, { summoner, user, character }, hasDivisions) => {
     if (!user || !character || !summoner)
         return;
     return [

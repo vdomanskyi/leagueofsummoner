@@ -48,7 +48,6 @@ const createCharacterStats = (character: Character) => {
 };
 
 export default async (
-  _LoS_: string,
   assets: Assets,
   { summoner, user, character }: Data,
   hasDivisions: boolean

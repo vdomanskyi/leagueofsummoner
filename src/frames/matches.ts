@@ -51,7 +51,7 @@ const createLastMatch = (assets: Assets, participant: Participant) => {
   return _lastMatch;
 };
 
-export default async (_LoS_: string, assets: Assets, { user, matchIds }: Data, fields: Fields) => {
+export default async (assets: Assets, { user, matchIds }: Data, fields: Fields) => {
   if (!user) return;
 
   const matches: Match[] = [];
@@ -82,7 +82,8 @@ export default async (_LoS_: string, assets: Assets, { user, matchIds }: Data, f
   });
 
   if (_lastMatch) _list.push(_lastMatch);
-  _list.push(..._previousMatches);
+
+  _list.push($('<div>').addClass('matches').append(_previousMatches));
 
   return _list;
 };
