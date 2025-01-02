@@ -1,18 +1,18 @@
 {
   "name": "leagueofsummoner",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "The League of Summoner widget displays real-time data for a summoner, including: Rank,Tier,Wins,Losses,Total Matches,Win Percentage,Match History",
   "type": "module",
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "run-s dev:**",
-    "dev:remove": "rm -rf dist",
-    "dev:widget": "npx tsc --outDir ./dist",
-    "dev:styles": "sass src/style.scss dist/style.css",
-    "dev:extension": "node src/utils/add_js_extension.js",
-    "publish": "run-s dev:** && node src/utils/generate_doc.js && npm publish"
+    "build": "run-s dev:**",
+    "build:remove": "rm -rf dist",
+    "build:widget": "npx tsc --outDir ./dist",
+    "build:styles": "sass src/style.scss dist/style.css",
+    "build:extension": "node src/utils/add_js_extension.js",
+    "build:doc": "node src/utils/generate_doc.js"
   },
   "repository": {
     "type": "git",
