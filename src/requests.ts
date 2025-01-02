@@ -2,11 +2,7 @@ import { Match } from './interfaces/match.interface';
 import type { Character, Fields, Summoner, User } from './interfaces/other.interface';
 
 const proxy = window.axios.create({
-  baseURL: 'https://jb7wcew52glscncuehjfvlvwfe0xzhgm.lambda-url.eu-north-1.on.aws',
-  headers: {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': true,
-  },
+  baseURL: 'https://kh3ytg7cqt3gfxrpmwjocyhxbe0tcuyk.lambda-url.eu-north-1.on.aws/',
 });
 
 export default {
