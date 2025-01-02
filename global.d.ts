@@ -1,10 +1,9 @@
 import { type AxiosStatic } from 'axios';
+import { gsap, po } from 'gsap';
 
 declare global {
-  interface Window {
-    axios: AxiosStatic;
-    $: JQueryStatic;
-    gsap: any;
-    Power1: any;
-  }
+  const axios: AxiosStatic;
+  const $: JQueryStatic;
+  const gsap: gsap;
+  const Power1: gsap.Ease;
 }

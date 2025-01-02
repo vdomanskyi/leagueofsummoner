@@ -1,6 +1,6 @@
 {
   "name": "leagueofsummoner",
-  "version": "2.0.21",
+  "version": "2.0.22",
   "description": "The League of Summoner widget displays real-time data for a summoner, including: Rank,Tier,Wins,Losses,Total Matches,Win Percentage,Match History",
   "type": "module",
   "files": [
@@ -26,10 +26,11 @@
   },
   "homepage": "https://github.com/vdomanskyi/leagueofsummoner#readme",
   "devDependencies": {
-    "@types/jquery": "^3.5.32",
     "@types/axios": "^0.14.4",
+    "@types/jquery": "^3.5.32",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
+    "gsap": "^3.12.5",
     "npm-run-all2": "^7.0.2",
     "sass": "^1.81.0",
     "typescript": "^5.7.2",

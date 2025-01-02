@@ -103,10 +103,10 @@ const animate = () => {
   const countFrames = row.children().length;
   const frameWidth = width / countFrames;
 
-  const timeline = window.gsap.timeline({
+  const timeline = gsap.timeline({
     repeat: -1,
     repeatDelay: 0,
-    defaults: { ease: window.Power1.easeInOut, duration: fields.transitionDuration },
+    defaults: { ease: Power1.easeInOut, duration: fields.transitionDuration },
   });
 
   for (let i = 0; i < countFrames; i++) {
@@ -180,7 +180,7 @@ const interval = () => {
   if (fields) setInterval(factory, (countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
 };
 
-window.addEventListener('onWidgetLoad', async (obj) => {
+addEventListener('onWidgetLoad', async (obj) => {
   const { detail } = obj as unknown as Detail;
 
   fields = detail.fieldData;

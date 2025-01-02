@@ -1,11 +1,10 @@
 import { Match } from './interfaces/match.interface';
 import type { Character, Fields, Summoner, User } from './interfaces/other.interface';
 
-const proxy = window.axios.create({
-  baseURL: 'https://vk6rjg5jhnxdoiz6vxtfv5brca0vaqtc.lambda-url.eu-north-1.on.aws/',
+const proxy = axios.create({
+  baseURL: 'https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/',
   headers: {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
   },
 });
 
