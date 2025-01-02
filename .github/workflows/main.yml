@@ -2,10 +2,13 @@ name: Release
 
 on:
   push:
-    paths:
-      - 'package.json'
+    # paths:
+    #   - 'package.json'
     branches:
       - main
+
+permissions:
+  contents: write
 
 jobs:
   release:
