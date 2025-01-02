@@ -2,9 +2,19 @@
   font-family: BeaufortForLOL;
   src: url("https://raw.communitydragon.org/latest/game/assets/ux/fonts/beaufortforlol-bold.otf");
 }
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 :root {
   --white: #f0e6d2;
   --yellow: #c89b3c;
+  --gold500: #785a28;
+  --gold700: #32281e;
   --blue500: #5383e8;
   --red600: #e84057;
   --green: #0ac8b9;
@@ -37,11 +47,48 @@ p {
   min-width: 200px;
   max-width: 200px;
 }
+.widget.loading {
+  --loading-size: 75px;
+  --loading-border: 4px;
+  position: relative;
+}
+.widget.loading::before {
+  position: absolute;
+  top: calc(50% - var(--loading-size) / 2);
+  left: calc(50% - var(--loading-size) / 2);
+  content: "";
+  display: block;
+  height: var(--loading-size);
+  min-height: var(--loading-size);
+  max-height: var(--loading-size);
+  width: var(--loading-size);
+  min-width: var(--loading-size);
+  max-width: var(--loading-size);
+  border: var(--loading-border) solid var(--yellow);
+  border-radius: 100%;
+  border-right-color: var(--gold500);
+  transform-origin: center center;
+  animation: loading 1s infinite linear;
+}
+.widget.loading::after {
+  content: "";
+  display: block;
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  border: var(--loading-border) solid var(--gold700);
+  background-color: rgba(220, 182, 102, 0.3);
+}
 .widget.flip-content .row {
   flex-direction: row-reverse;
 }
 .widget .border {
   position: absolute;
+  top: 0;
+  left: 0;
   z-index: 900;
 }
 .widget .border.left-right {
@@ -84,7 +131,6 @@ p {
   position: relative;
   z-index: 1500;
   display: flex;
-  width: 400px;
 }
 
 .frame.general .content .avatar {
@@ -135,7 +181,7 @@ p {
   max-width: 120px;
   border-radius: 100%;
 }
-.frame.general .content .avatar .border {
+.frame.general .content .avatar .ranked {
   position: relative;
   z-index: 5;
   width: 100%;
@@ -341,6 +387,89 @@ p {
 }
 .frame.matches .matches .match .pings p {
   font-size: 11px;
+}
+
+.frame.session .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.frame.session .content .session-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+}
+.frame.session .content .session-container .session-title {
+  font-size: 18px;
+  text-align: center;
+  color: var(--white);
+}
+.frame.session .content .session-container .session-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value .win {
+  color: var(--green);
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value .total {
+  color: var(--white);
+}
+.frame.session .content .session-container .session-stats .session-win-losses .value .losses {
+  color: var(--red600);
+}
+.frame.session .content .session-container .session-stats .session-kda .value {
+  color: var(--yellow);
+}
+.frame.session .content .champions {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+}
+.frame.session .content .champions .title {
+  font-size: 18px;
+  text-align: center;
+  color: var(--white);
+  width: 100%;
+}
+.frame.session .content .champions .masteries {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.frame.session .content .champions .masteries .mastery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.frame.session .content .champions .masteries .mastery .champion {
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+}
+.frame.session .content .champions .masteries .mastery .points {
+  font-size: 13px;
+  color: var(--yellow);
 }
 
 /*# sourceMappingURL=style.css.map */

@@ -1,13 +1,21 @@
 {
   "name": "leagueofsummoner",
-  "version": "1.0.9",
-  "description": "",
-  "main": "script.js",
+  "version": "2.0.0",
+  "description": "The League of Summoner widget displays real-time data for a summoner, including: Rank,Tier,Wins,Losses,Total Matches,Win Percentage,Match History",
+  "type": "module",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build:styles": "sass style.scss dist/style.css"
+    "dev": "run-s dev:**",
+    "dev:remove": "rm -rf dist",
+    "dev:widget": "npx tsc --outDir ./dist",
+    "dev:styles": "sass src/style.scss dist/style.css",
+    "dev:extension": "node src/utils/add_js_extension.js",
+    "publish": "run-s dev:** && run-s publish:**",
+    "publish:doc": "node src/utils/generate_doc.js",
+    "publish:publish": "npm publish",
+    "git": "git add . && git commit -m \"chore(release): version $(node -p 'require(\"./package.json\").version')\" && git push && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -20,6 +28,15 @@
   },
   "homepage": "https://github.com/vdomanskyi/leagueofsummoner#readme",
   "devDependencies": {
-    "sass": "^1.81.0"
+    "@types/axios": "^0.14.4",
+    "fs-extra": "^11.2.0",
+    "glob": "^11.0.0",
+    "npm-run-all2": "^7.0.2",
+    "sass": "^1.81.0",
+    "typescript": "^5.7.2",
+    "typescript-transform-paths": "^3.5.3"
+  },
+  "dependencies": {
+    "@types/jquery": "^3.5.32"
   }
 }
