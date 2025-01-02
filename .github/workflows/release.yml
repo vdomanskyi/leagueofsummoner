@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    paths:
+      - 'package.json'
+    branches:
+      - refactoring
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get version from package.json
+        id: get_version
+        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+
+      - name: Create Git tag
+        run: git tag -a "v${{ env.VERSION }}" -m "Release v${{ env.VERSION }}" && git push origin "v${{ env.VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: 'v${{ env.VERSION }}'
+          release_name: 'v${{ env.VERSION }}'
+          body: 'Release version v${{ env.VERSION }} was created.'
+          draft: false
+          prerelease: false

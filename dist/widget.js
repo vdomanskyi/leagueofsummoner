@@ -135,8 +135,14 @@ const factory = async (firstRender) => {
 /**
  * INITIALIZE
  */
+const interval = () => {
+    const countFrames = $('.row').children().length;
+    if (fields)
+        setInterval(factory, (countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
+};
 window.addEventListener('onWidgetLoad', async (obj) => {
     const { detail } = obj;
     fields = detail.fieldData;
-    factory(true);
+    await factory(true);
+    interval();
 });
