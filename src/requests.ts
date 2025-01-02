@@ -4,7 +4,7 @@ import type { Character, Fields, Summoner, User } from './interfaces/other.inter
 const proxy = window.axios.create({
   baseURL: 'https://jb7wcew52glscncuehjfvlvwfe0xzhgm.lambda-url.eu-north-1.on.aws',
   headers: {
-    'Access-Control-Allow-Origin': '*/*',
+    'Access-Control-Allow-Origin': 'https://streamelements.com',
   },
 });
 
