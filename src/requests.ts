@@ -5,7 +5,7 @@ const proxy = window.axios.create({
   baseURL: 'https://vk6rjg5jhnxdoiz6vxtfv5brca0vaqtc.lambda-url.eu-north-1.on.aws/',
   headers: {
     'Content-Type': 'application/json',
-    Origin: null,
+    'Access-Control-Allow-Origin': '*',
   },
 });
 
