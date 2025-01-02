@@ -1,6 +1,6 @@
 {
   "name": "leagueofsummoner",
-  "version": "2.0.14",
+  "version": "2.0.15",
   "description": "The League of Summoner widget displays real-time data for a summoner, including: Rank,Tier,Wins,Losses,Total Matches,Win Percentage,Match History",
   "type": "module",
   "files": [

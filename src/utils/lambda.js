@@ -1,7 +1,7 @@
-import http from "https";
+import http from 'https';
 
 export const handler = async (event) => {
-  const rawPath = event.body;
+  const rawPath = JSON.parse(event.body);
 
   if (!rawPath.startsWith('https://')) {
     return {
