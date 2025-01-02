@@ -17,8 +17,8 @@ const streamelements = fsx.readFileSync(__streamelements, 'utf-8');
 fsx.createFileSync(path.resolve(__dist, 'documentation', path.parse(__streamelements).base));
 fsx.writeFileSync(
   path.resolve(__dist, 'documentation', path.parse(__streamelements).base),
-  streamelements.replace(/{latest}/g, pkg.version).replace(/{fields}/g, JSON.stringify(fields, null, 2)),
+  streamelements.replace(/{fields}/g, JSON.stringify(fields, null, 2)),
   'utf-8'
 );
-
+// .replace(/{latest}/g, pkg.version)
 fsx.copyFileSync(__obtainAPIKey, path.resolve(__dist, 'documentation', path.parse(__obtainAPIKey).base));
