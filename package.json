@@ -12,7 +12,7 @@
     "dev:widget": "npx tsc --outDir ./dist",
     "dev:styles": "sass src/style.scss dist/style.css",
     "dev:extension": "node src/utils/add_js_extension.js",
-    "publish": "run-s publish:**",
+    "publish": "run-s dev:** && run-s publish:**",
     "publish:doc": "node src/utils/generate_doc.js",
     "publish:publish": "npm publish"
   },

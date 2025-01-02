@@ -138,6 +138,5 @@ const factory = async (firstRender) => {
 window.addEventListener('onWidgetLoad', async (obj) => {
     const { detail } = obj;
     fields = detail.fieldData;
-    console.log(fields);
     factory(true);
 });
