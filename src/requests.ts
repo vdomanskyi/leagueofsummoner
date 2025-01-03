@@ -3,6 +3,9 @@ import type { Character, Fields, Summoner, User } from './interfaces/other.inter
 
 const proxy = axios.create({
   baseURL: 'https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 export default {
