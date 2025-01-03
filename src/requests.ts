@@ -2,10 +2,7 @@ import { Match } from './interfaces/match.interface';
 import type { Character, Fields, Summoner, User } from './interfaces/other.interface';
 
 const proxy = axios.create({
-  baseURL: 'https://gfb4yi67pbkrvi4wbrol7ktlym0uvsqp.lambda-url.eu-north-1.on.aws/',
-  headers: {
-    'Access-Control-Allow-Origin': 'https://streamelements.com',
-  },
+  baseURL: 'https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/',
 });
 
 export default {
