@@ -1,4 +1,4 @@
-import type { Assets, Character, Data, Summoner, User } from 'src/interfaces/other.interface';
+import type { Assets, Character, Data, Summoner, User } from '../interfaces/other.interface';
 
 const createAvatar = (assets: Assets, summoner: Summoner, character: Character, hasDivisions: boolean) => {
   const _avatar = $('<div>').addClass('avatar');

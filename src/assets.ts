@@ -1,4 +1,4 @@
-import { Assets } from 'src/interfaces/other.interface';
+import { Assets } from './interfaces/other.interface';
 
 const assets: Assets = {
   profileIcon: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons',

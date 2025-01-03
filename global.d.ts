@@ -1,3 +1,5 @@
+/// <reference types="axios" />
+
 import { type AxiosStatic } from 'axios';
 import { gsap, po } from 'gsap';
 

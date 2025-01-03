@@ -1,22 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "strict": true,
-    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "outDir": "./dist/src",
-    "rootDir": "./src",
-    "baseUrl": "./",
-    "paths": {},
+    "importHelpers": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "./dist",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "plugins": [
-      { "transform": "typescript-transform-paths" },
-      { "transform": "typescript-transform-paths", "afterDeclarations": true }
-    ]
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES6",
+    "typeRoots": ["./node_modules/@types", "node_modules/@types/axios"],
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"]
+    }
   },
   "include": ["src/**/*", "global.d.ts"],
   "exclude": ["node_modules", "dist"]

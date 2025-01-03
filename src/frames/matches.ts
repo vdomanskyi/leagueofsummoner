@@ -1,5 +1,5 @@
-import { Match, Participant } from 'src/interfaces/match.interface';
-import { Assets, Data, Fields, User } from 'src/interfaces/other.interface';
+import { Match, Participant } from '../interfaces/match.interface';
+import { Assets, Data, Fields, User } from '../interfaces/other.interface';
 
 import requests from '../requests';
 
