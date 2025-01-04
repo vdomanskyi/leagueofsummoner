@@ -11,8 +11,8 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES6",
-    "typeRoots": ["./node_modules/@types", "node_modules/@types/axios"],
+    "target": "ESNext",
+    "typeRoots": ["./node_modules/@types"],
     "paths": {
       "*": ["node_modules/*", "src/types/*"]
     }

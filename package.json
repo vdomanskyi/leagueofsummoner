@@ -1,6 +1,6 @@
 {
   "name": "leagueofsummoner",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "description": "The League of Summoner widget displays real-time data for a summoner, including: Rank,Tier,Wins,Losses,Total Matches,Win Percentage,Match History",
   "type": "module",
   "files": [
@@ -10,7 +10,7 @@
   "scripts": {
     "build": "run-s build:**",
     "build:remove": "rm -rf dist",
-    "build:widget": " npx rollup -c",
+    "build:widget": " npx esbuild src/widget.ts --bundle --outfile=dist/widget.js --platform=node",
     "build:styles": "sass src/style.scss dist/style.css",
     "build:doc": "node src/utils/generate_doc.js"
   },
@@ -28,14 +28,13 @@
   },
   "homepage": "https://github.com/vdomanskyi/leagueofsummoner#readme",
   "devDependencies": {
-    "@rollup/plugin-typescript": "^12.1.2",
     "@types/axios": "^0.14.4",
     "@types/jquery": "^3.5.32",
+    "esbuild": "^0.24.2",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
     "gsap": "^3.12.5",
     "npm-run-all2": "^7.0.2",
-    "rollup": "^4.29.1",
     "sass": "^1.81.0",
     "typescript": "^5.7.2"
   },
