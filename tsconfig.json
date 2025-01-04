@@ -5,13 +5,13 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "module": "ES2015",
+    "module": "ESNext",
     "moduleResolution": "node",
     "outDir": "./dist",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2015",
+    "target": "ES6",
     "typeRoots": ["./node_modules/@types", "node_modules/@types/axios"],
     "paths": {
       "*": ["node_modules/*", "src/types/*"]
