@@ -1,6 +1,8 @@
 import { Match } from './interfaces/match.interface';
 import type { Character, Fields, Summoner, User } from './interfaces/other.interface';
 
+const baseURL = 'https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/';
+
 const proxy = axios.create({
   baseURL: 'https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/',
   headers: {
@@ -12,9 +14,15 @@ const proxy = axios.create({
 export default {
   general: {
     getUser: async function (fields: Fields) {
-      const rawPath = `https://${fields.platformRouting}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${fields.gameName}/${fields.tagLine}?api_key=${fields.API_KEY}`;
-      return proxy.post<User>('', { rawPath });
+      return fetch(baseURL, {
+        method: 'POST',
+        body: `https://${fields.regionalRouting}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${fields.gameName}/${fields.tagLine}?api_key=${fields.API_KEY}`,
+      }).then((res) => res.json());
     },
+    // getUser: async function (fields: Fields) {
+    //   const rawPath = `https://${fields.platformRouting}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${fields.gameName}/${fields.tagLine}?api_key=${fields.API_KEY}`;
+    //   return proxy.post<User>('', { rawPath });
+    // },
     getCharacterList: async function (fields: Fields, summonerId: string) {
       const rawPath = `https://${fields.regionalRouting}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=${fields.API_KEY}`;
       return proxy.post<Character[]>('', { rawPath });

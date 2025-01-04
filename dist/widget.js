@@ -35,20 +35,26 @@ var assets = {
 var assets_default = assets;
 
 // src/requests.ts
+var baseURL = "https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/";
 var proxy = axios.create({
   baseURL: "https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/",
   headers: {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "null",
-    Origin: "null"
+    "Access-Control-Allow-Origin": "*"
   }
 });
 var requests_default = {
   general: {
     getUser: async function(fields2) {
-      const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${fields2.gameName}/${fields2.tagLine}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", { rawPath });
+      return fetch(baseURL, {
+        method: "POST",
+        body: `https://${fields2.regionalRouting}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${fields2.gameName}/${fields2.tagLine}?api_key=${fields2.API_KEY}`
+      }).then((res) => res.json());
     },
+    // getUser: async function (fields: Fields) {
+    //   const rawPath = `https://${fields.platformRouting}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${fields.gameName}/${fields.tagLine}?api_key=${fields.API_KEY}`;
+    //   return proxy.post<User>('', { rawPath });
+    // },
     getCharacterList: async function(fields2, summonerId) {
       const rawPath = `https://${fields2.regionalRouting}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=${fields2.API_KEY}`;
       return proxy.post("", { rawPath });
@@ -272,14 +278,8 @@ var factory = async (firstRender) => {
   animate();
   if (firstRender) widget.removeClass("loading").append(createBorder());
 };
-var interval = () => {
-  const countFrames = $(".row").children().length;
-  console.log("interval");
-  if (fields) setInterval(factory, (countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3e3);
-};
 addEventListener("onWidgetLoad", async (obj) => {
   const { detail } = obj;
   fields = detail.fieldData;
   await factory(true);
-  interval();
 });
