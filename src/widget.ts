@@ -191,5 +191,5 @@ addEventListener('onWidgetLoad', async (obj) => {
 
   await factory(true);
 
-  interval();
+  // interval();
 });
