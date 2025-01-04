@@ -4,7 +4,8 @@ export default {
   input: 'src/widget.ts',
   output: {
     file: 'dist/widget.js',
-    format: 'cjs',
+    format: 'iife',
+    name: 'widget',
   },
   plugins: [typescript()],
 };
