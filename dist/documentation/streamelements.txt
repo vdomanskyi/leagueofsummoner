@@ -1,0 +1,97 @@
+HTML tab:
+
+<link href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/leagueofsummoner@2.1.7/dist/style.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/leagueofsummoner@2.1.7/dist/widget.js"></script>
+
+<div class="widget"><div>
+
+
+
+
+Fields tab:
+
+{
+  "pauseDuration": {
+    "type": "number",
+    "label": "Swap pause duration (in seconds)",
+    "value": 5
+  },
+  "transitionDuration": {
+    "type": "number",
+    "label": "Transition pause duration (in seconds)",
+    "value": 3
+  },
+  "flipBorder": {
+    "type": "dropdown",
+    "label": "Flip border",
+    "value": "true",
+    "options": {
+      "true": "Yes",
+      "false": "No"
+    }
+  },
+  "regionalRouting": {
+    "type": "dropdown",
+    "label": "Platform routing",
+    "value": "EUW1",
+    "options": {
+      "BR1": "BR1",
+      "EUN1": "EUN1",
+      "EUW1": "EUW1",
+      "JP1": "JP1",
+      "KR": "KR",
+      "LA1": "LA1",
+      "LA2": "LA2",
+      "NA1": "NA1",
+      "OC1": "OC1",
+      "TR1": "TR1",
+      "PH2": "PH2",
+      "SG2": "SG2",
+      "TH2": "TH2",
+      "TW2": "TW2",
+      "VN2": "VN2"
+    }
+  },
+  "platformRouting": {
+    "type": "dropdown",
+    "label": "Regional routing",
+    "value": "EUROPE",
+    "options": {
+      "AMERICAS": "AMERICAS",
+      "ASIA": "ASIA",
+      "EUROPE": "EUROPE",
+      "SEA": "SEA"
+    }
+  },
+  "matchesType": {
+    "type": "dropdown",
+    "label": "Select match type",
+    "value": "ranked",
+    "options": {
+      "ranked": "ranked",
+      "normal": "normal",
+      "tourney": "tourney",
+      "tutorial": "tutorial"
+    }
+  },
+  "gameName": {
+    "type": "text",
+    "label": "Game name",
+    "value": null
+  },
+  "tagLine": {
+    "type": "text",
+    "label": "Tag line",
+    "value": null
+  },
+  "API_KEY": {
+    "type": "password",
+    "label": "Personal API Key",
+    "value": null
+  }
+}
