@@ -38,7 +38,9 @@ var assets_default = assets;
 var proxy = axios.create({
   baseURL: "https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/",
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "null",
+    Origin: "null"
   }
 });
 var requests_default = {
@@ -154,7 +156,6 @@ var matches_default = async (assets2, { user, matchIds }, fields2) => {
       })
     )
   );
-  matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
   matches.forEach((match, index) => {
     const participant = getParticipant(user, match);
     if (!participant) return;
@@ -192,10 +193,11 @@ var data = {
   matchIds: [],
   matches: []
 };
-var getUserData = async () => {
+var getUserData = async (a) => {
+  console.log(a);
   if (!fields) return console.error(__LoS__, "No fields found");
   await requests_default.general.getUser(fields).then((res) => {
-    data.user = res.data;
+    if (res.data.puuid) data.user = res.data;
   });
   if (data.user === null) return console.error(__LoS__, "No user found");
   await requests_default.general.getSummonerByPUUID(fields, data.user.puuid).then((res) => {
@@ -262,7 +264,7 @@ var frames = async () => {
   };
 };
 var factory = async (firstRender) => {
-  await getUserData();
+  await getUserData(firstRender);
   const F = await frames();
   $(".animation").remove();
   if (!F?.background || !F.row) return;
@@ -272,6 +274,7 @@ var factory = async (firstRender) => {
 };
 var interval = () => {
   const countFrames = $(".row").children().length;
+  console.log("interval");
   if (fields) setInterval(factory, (countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3e3);
 };
 addEventListener("onWidgetLoad", async (obj) => {

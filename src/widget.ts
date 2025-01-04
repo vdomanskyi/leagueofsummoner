@@ -47,11 +47,13 @@ let data: Data = {
  * GET ASSETS AND USER DATA
  */
 
-const getUserData = async () => {
+const getUserData = async (a: any) => {
+  console.log(a);
+
   if (!fields) return console.error(__LoS__, 'No fields found');
 
   await requests.general.getUser(fields).then((res) => {
-    data.user = res.data;
+    if (res.data.puuid) data.user = res.data;
   });
 
   if (data.user === null) return console.error(__LoS__, 'No user found');
@@ -155,7 +157,7 @@ const frames = async () => {
 };
 
 const factory = async (firstRender?: boolean) => {
-  await getUserData();
+  await getUserData(firstRender);
 
   const F = await frames();
 
@@ -176,6 +178,8 @@ const factory = async (firstRender?: boolean) => {
 
 const interval = () => {
   const countFrames = $('.row').children().length;
+
+  console.log('interval');
 
   if (fields) setInterval(factory, (countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
 };
