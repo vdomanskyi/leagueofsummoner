@@ -185,11 +185,13 @@ const interval = () => {
 };
 
 addEventListener('onWidgetLoad', async (obj) => {
-  const { detail } = obj as unknown as Detail;
+  setTimeout(async () => {
+    const { detail } = obj as unknown as Detail;
 
-  fields = detail.fieldData;
+    fields = detail.fieldData;
 
-  await factory(true);
+    await factory(true);
+  }, 3000);
 
   // interval();
 });
