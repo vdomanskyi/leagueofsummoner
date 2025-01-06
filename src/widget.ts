@@ -48,8 +48,6 @@ let data: Data = {
  */
 
 const getUserData = async (a: any) => {
-  console.log(a);
-
   if (!fields) return console.error(__LoS__, 'No fields found');
 
   await requests.general.getUser(fields).then((res) => {
@@ -185,13 +183,11 @@ const interval = () => {
 };
 
 addEventListener('onWidgetLoad', async (obj) => {
-  setTimeout(async () => {
-    const { detail } = obj as unknown as Detail;
+  const { detail } = obj as unknown as Detail;
 
-    fields = detail.fieldData;
+  fields = detail.fieldData;
 
-    await factory(true);
-  }, 3000);
+  await factory(true);
 
   // interval();
 });

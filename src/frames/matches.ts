@@ -69,7 +69,7 @@ export default async (assets: Assets, { user, matchIds }: Data, fields: Fields) 
     )
   );
 
-  // matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+  matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
 
   matches.forEach((match, index) => {
     const participant = getParticipant(user, match);

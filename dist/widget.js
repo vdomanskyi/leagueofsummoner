@@ -35,43 +35,35 @@ var assets = {
 var assets_default = assets;
 
 // src/requests.ts
-var baseURL = "https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/";
 var proxy = axios.create({
-  baseURL: "https://laifmhznnd5mav5xybwbm6icoa0ugkbk.lambda-url.eu-north-1.on.aws/",
+  baseURL: "https://kef3rty3rivaxm5m772uucj7de0qhias.lambda-url.eu-north-1.on.aws/",
   headers: {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*"
+    "Content-Type": "text/plain"
   }
 });
 var requests_default = {
   general: {
     getUser: async function(fields2) {
-      return fetch(baseURL, {
-        method: "POST",
-        body: `https://${fields2.regionalRouting}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${fields2.gameName}/${fields2.tagLine}?api_key=${fields2.API_KEY}`
-      }).then((res) => res.json());
+      const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${fields2.gameName}/${fields2.tagLine}?api_key=${fields2.API_KEY}`;
+      return proxy.post("", rawPath.toString());
     },
-    // getUser: async function (fields: Fields) {
-    //   const rawPath = `https://${fields.platformRouting}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${fields.gameName}/${fields.tagLine}?api_key=${fields.API_KEY}`;
-    //   return proxy.post<User>('', { rawPath });
-    // },
     getCharacterList: async function(fields2, summonerId) {
       const rawPath = `https://${fields2.regionalRouting}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", { rawPath });
+      return proxy.post("", rawPath.toString());
     },
     getSummonerByPUUID: async function(fields2, puuid) {
       const rawPath = `https://${fields2.regionalRouting}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", { rawPath });
+      return proxy.post("", rawPath.toString());
     }
   },
   match: {
     getMatchList: async function(fields2, puuid, count = 7) {
       const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?type=${fields2.matchesType}&start=0&count=${count}&api_key=${fields2.API_KEY}`;
-      return proxy.post("", { rawPath });
+      return proxy.post("", rawPath.toString());
     },
     getMatchById: async function(fields2, matchId) {
       const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/lol/match/v5/matches/${matchId}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", { rawPath });
+      return proxy.post("", rawPath.toString());
     }
   }
   // champion: {
@@ -162,6 +154,7 @@ var matches_default = async (assets2, { user, matchIds }, fields2) => {
       })
     )
   );
+  matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
   matches.forEach((match, index) => {
     const participant = getParticipant(user, match);
     if (!participant) return;
@@ -200,7 +193,6 @@ var data = {
   matches: []
 };
 var getUserData = async (a) => {
-  console.log(a);
   if (!fields) return console.error(__LoS__, "No fields found");
   await requests_default.general.getUser(fields).then((res) => {
     if (res.data.puuid) data.user = res.data;
