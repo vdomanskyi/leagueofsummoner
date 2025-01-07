@@ -4,13 +4,22 @@
   .content {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     gap: 4px;
+
+    .last-match,
+    .matches {
+      width: 100%;
+    }
 
     .last-match {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-evenly;
       gap: 0 8px;
+
+      height: 100%;
 
       .title {
         font-size: 14px;

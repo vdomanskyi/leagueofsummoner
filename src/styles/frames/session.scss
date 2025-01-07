@@ -1,1 +1,9 @@
 @use '../mixins.scss' as *;
+
+.frame.session {
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}

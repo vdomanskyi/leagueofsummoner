@@ -74,97 +74,6 @@ var requests_default = {
   // },
 };
 
-// src/frames/general.ts
-var createAvatar = (assets2, summoner, character, hasDivisions2) => {
-  const _avatar = $("<div>").addClass("avatar");
-  const _icon = $("<img>").addClass("icon").attr("src", `${assets2.profileIcon}/${summoner.profileIconId}.jpg`);
-  const _ranked = $("<img>").addClass("ranked").attr("src", `${assets2.rankedFolder}/${assets2.ranked[character.tier]}`);
-  if (hasDivisions2) _avatar.append($("<div>").addClass("division").append($("<p>").text(character.rank)));
-  _avatar.append([_ranked, _icon]);
-  return _avatar;
-};
-var createCharacter = (character, user) => {
-  const _character = $("<div>").addClass("character");
-  const _lp = $("<p>").addClass("lp").text(`${character.leaguePoints}LP`);
-  const _username = $("<div>").addClass("username").append($("<p>").text(`${user.gameName}#${user.tagLine}`));
-  _character.append([_lp, _username]);
-  return _character;
-};
-var createCharacterStats = (character) => {
-  const _characterStats = $("<div>").addClass("win-total-loss-stats");
-  const _wins = $("<p>").addClass("wins").text(`${character.wins}W`);
-  const _losses = $("<p>").addClass("losses").text(`${character.losses}L`);
-  const _total = $("<p>").addClass("total").text(`${character.wins + character.losses}`);
-  if (character.wins > 0) {
-    const value = (character.wins / (character.wins + character.losses) * 100).toFixed(0);
-    const _percent = $("<span>").text(`(${value}%)`);
-    _total.append(_percent);
-  }
-  _characterStats.append([_wins, _total, _losses]);
-  return _characterStats;
-};
-var general_default = async (assets2, { summoner, user, character }, hasDivisions2) => {
-  if (!user || !character || !summoner) return;
-  return [
-    createAvatar(assets2, summoner, character, hasDivisions2),
-    createCharacter(character, user),
-    createCharacterStats(character)
-  ];
-};
-
-// src/frames/matches.ts
-var getParticipant = (user, match) => match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
-var createMatch = (assets2, participant) => {
-  const countPings = Object.keys(participant).filter((k) => k.toLowerCase().includes("pings")).reduce((sum, key) => sum + Number(participant[key]), 0);
-  const _match = $("<div>").addClass("match");
-  const _champion = $("<div>").addClass("champion");
-  const _matchStats = $("<div>").addClass("match__stats");
-  const _stats = $("<p>").addClass("stats");
-  const _bait = $("<img>").addClass("bait").attr("src", assets2.baitPing);
-  const _count = $("<p>").text(`${countPings}`);
-  const _pings = $("<div>").addClass("pings");
-  _stats.text(`${participant.kills}/${participant.deaths}/${participant.assists}`);
-  _pings.append([_bait, _count]);
-  _champion.append($("<img>").attr("src", `${assets2.championIcons}/${participant.championId}.png`));
-  _matchStats.append([_stats, _pings]);
-  _match.append([_champion, _matchStats]);
-  if (participant.win) _match.addClass("win");
-  return _match;
-};
-var createLastMatch = (assets2, participant) => {
-  $(".last-match").remove();
-  const _lastMatch = $("<div>").addClass("last-match");
-  const _title = $("<p>").addClass("title");
-  const _last = $("<span>").addClass("last").text("Last");
-  const _match = $("<span>").addClass("match").text("match:");
-  _title.append([_last, _match]);
-  _lastMatch.append(_title, createMatch(assets2, participant));
-  return _lastMatch;
-};
-var matches_default = async (assets2, { user, matchIds }, fields2) => {
-  if (!user) return;
-  const matches = [];
-  const _list = [];
-  const _previousMatches = [];
-  let _lastMatch = null;
-  await Promise.all(
-    matchIds.map(
-      (id) => requests_default.match.getMatchById(fields2, id).then((res) => {
-        matches.push(res.data);
-      })
-    )
-  );
-  matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
-  matches.forEach((match, index) => {
-    const participant = getParticipant(user, match);
-    if (!participant) return;
-    index ? _previousMatches.push(createMatch(assets2, participant)) : _lastMatch = createLastMatch(assets2, participant);
-  });
-  if (_lastMatch) _list.push(_lastMatch);
-  _list.push($("<div>").addClass("matches").append(_previousMatches));
-  return _list;
-};
-
 // src/match.ts
 var match_default = {
   metadata: {
@@ -3699,6 +3608,26 @@ var package_default = {
   }
 };
 
+// src/frames/matches.ts
+var getParticipant = (user, match) => match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
+var createMatch = (assets2, participant) => {
+  const countPings = Object.keys(participant).filter((k) => k.toLowerCase().includes("pings")).reduce((sum, key) => sum + Number(participant[key]), 0);
+  const _match = $("<div>").addClass("match");
+  const _champion = $("<div>").addClass("champion");
+  const _matchStats = $("<div>").addClass("match__stats");
+  const _stats = $("<p>").addClass("stats");
+  const _bait = $("<img>").addClass("bait").attr("src", assets2.baitPing);
+  const _count = $("<p>").text(`${countPings}`);
+  const _pings = $("<div>").addClass("pings");
+  _stats.text(`${participant.kills}/${participant.deaths}/${participant.assists}`);
+  _pings.append([_bait, _count]);
+  _champion.append($("<img>").attr("src", `${assets2.championIcons}/${participant.championId}.png`));
+  _matchStats.append([_stats, _pings]);
+  _match.append([_champion, _matchStats]);
+  if (participant.win) _match.addClass("win");
+  return _match;
+};
+
 // src/frames/session.ts
 var storeName = `LoS_v${package_default.version}`;
 var createTitle = () => {
@@ -3814,12 +3743,6 @@ var frames = async () => {
   if (!assets_default || !data.character || !fields) return;
   const _row = $("<div>").addClass("row");
   const _frames = [];
-  await general_default(assets_default, data, hasDivisions[data.character.tier]).then((frame) => {
-    if (frame) _frames.push(createFrame("general", frame));
-  });
-  await matches_default(assets_default, data, fields).then((frame) => {
-    if (frame) _frames.push(createFrame("matches", frame));
-  });
   await session_default(assets_default, data).then((frame) => {
     if (frame) _frames.push(createFrame("session", frame));
   });

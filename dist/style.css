@@ -102,13 +102,20 @@
 .frame.matches .content {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   gap: 4px;
+}
+.frame.matches .content .last-match,
+.frame.matches .content .matches {
+  width: 100%;
 }
 .frame.matches .content .last-match {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   gap: 0 8px;
+  height: 100%;
 }
 .frame.matches .content .last-match .title {
   font-size: 14px;
@@ -131,6 +138,12 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 4px 8px;
+}
+
+.frame.session .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 @font-face {
@@ -321,7 +334,7 @@ p {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 2px 4px;
+  gap: 4px;
 }
 .match.win .champion::before {
   border-color: var(--blue500);
@@ -351,6 +364,9 @@ p {
   width: 100%;
   height: 100%;
   border: 2px solid var(--red600);
+}
+.match__stats p {
+  font-size: 13px;
 }
 .match__stats .stats {
   text-align: center;
