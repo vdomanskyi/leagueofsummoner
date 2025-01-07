@@ -11,7 +11,7 @@
     "build": "run-s build:**",
     "build:remove": "rm -rf dist",
     "build:widget": " npx esbuild src/widget.ts --bundle --outfile=dist/widget.js --platform=node",
-    "build:styles": "sass src/style.scss dist/style.css",
+    "build:styles": "sass src/styles/index.scss dist/style.css",
     "build:doc": "node src/utils/generate_doc.js"
   },
   "repository": {

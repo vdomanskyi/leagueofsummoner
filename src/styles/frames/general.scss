@@ -1,0 +1,120 @@
+@use '../mixins.scss' as *;
+
+.frame.general {
+  .content {
+    .avatar {
+      position: absolute;
+      top: -207px;
+      left: -169px;
+      z-index: 1000;
+
+      @include strict_size(512px, 512px);
+
+      transform: scale(0.55);
+
+      .icon,
+      .division {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+
+        transform: translate(-50%, -50%);
+      }
+
+      .division {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        z-index: 50;
+
+        @include strict_size(21px, 100%);
+
+        color: var(--white);
+
+        margin-top: -57px;
+
+        p {
+          margin-right: -1px;
+
+          line-height: 1px;
+          font-size: 21px;
+        }
+      }
+
+      .icon {
+        @include strict_size(120px, 120px);
+
+        border-radius: 100%;
+      }
+
+      .ranked {
+        position: relative;
+        z-index: 5;
+
+        width: 100%;
+      }
+    }
+
+    .character {
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      z-index: 5;
+
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: column;
+
+      width: 100%;
+      height: 100%;
+
+      padding: {
+        top: 98px;
+      }
+
+      p {
+        text-align: center;
+      }
+
+      .lp {
+        font-size: 14px;
+        line-height: 12px;
+        color: var(--yellow);
+
+        margin: {
+          bottom: 0px;
+        }
+      }
+
+      .username {
+        position: relative;
+
+        @include strict_size(36px, 100%);
+
+        p {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+
+          font-size: 16px;
+          line-height: 14px;
+          color: var(--white);
+
+          transform: translate(-50%, -50%);
+
+          width: 100%;
+        }
+      }
+    }
+
+    .win-total-loss-stats {
+      position: absolute;
+      left: 0;
+      bottom: 2px;
+      z-index: 10;
+    }
+  }
+}

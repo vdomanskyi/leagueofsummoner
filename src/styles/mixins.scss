@@ -1,0 +1,13 @@
+@mixin strict_size($height, $width) {
+  @if $height {
+    height: #{$height};
+    min-height: #{$height};
+    max-height: #{$height};
+  }
+
+  @if $width {
+    width: #{$width};
+    min-width: #{$width};
+    max-width: #{$width};
+  }
+}

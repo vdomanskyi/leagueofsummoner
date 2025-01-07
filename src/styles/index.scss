@@ -1,0 +1,278 @@
+@use './mixins.scss' as *;
+
+@use './frames/general.scss';
+@use './frames/matches.scss';
+@use './frames/session.scss';
+
+@font-face {
+  font-family: BeaufortForLOL;
+  src: url('https://raw.communitydragon.org/latest/game/assets/ux/fonts/beaufortforlol-bold.otf');
+}
+
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+:root {
+  --white: #f0e6d2;
+  --yellow: #c89b3c;
+  --gold500: #785a28;
+  --gold700: #32281e;
+  --blue500: #5383e8;
+  --red600: #e84057;
+  --green: #0ac8b9;
+}
+
+body {
+  overflow: visible !important;
+  margin-top: 100px !important;
+}
+
+* {
+  box-sizing: border-box;
+
+  * ::after,
+  * ::before {
+    box-sizing: border-box;
+  }
+
+  font-family: BeaufortForLOL;
+}
+
+p {
+  margin: 0;
+}
+
+/**
+  * Widget
+  */
+
+.widget {
+  position: relative;
+
+  @include strict_size(200px, 200px);
+
+  .border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 900;
+
+    &.left-right {
+      z-index: 5000;
+    }
+  }
+
+  .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    .banner {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  .frame {
+    @include strict_size(200px, 200px);
+    padding: 14px;
+  }
+
+  .content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.widget.loading {
+  --loading-size: 75px;
+  --loading-border: 4px;
+
+  position: relative;
+
+  &::before {
+    content: '';
+
+    position: absolute;
+    top: calc(50% - (var(--loading-size) / 2));
+    left: calc(50% - (var(--loading-size) / 2));
+
+    display: block;
+
+    @include strict_size(var(--loading-size), var(--loading-size));
+
+    border: var(--loading-border) solid var(--yellow);
+    border-radius: 100%;
+    border-right-color: var(--gold500);
+
+    transform-origin: center center;
+    animation: loading 1s infinite linear;
+  }
+
+  &::after {
+    content: '';
+
+    display: block;
+
+    @include strict_size(100%, 100%);
+
+    border: var(--loading-border) solid var(--gold700);
+
+    background-color: rgba($color: #dcb666, $alpha: 0.3);
+  }
+}
+
+.widget.error {
+  --error-border: 4px;
+
+  position: relative;
+
+  &::before {
+    content: '';
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: block;
+
+    @include strict_size(100%, 100%);
+
+    border: var(--error-border) solid var(--red600);
+
+    background-color: rgba($color: #e3808d, $alpha: 0.3);
+  }
+}
+
+/**
+  * Animation
+  */
+
+.row,
+.animation {
+  position: relative;
+  z-index: 1500;
+
+  display: flex;
+}
+
+/**
+  * Win, loss, total
+  */
+
+.win-total-loss-stats {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 4px;
+
+  p {
+    font-size: 14px;
+  }
+
+  .total {
+    color: var(--white);
+  }
+
+  .wins,
+  .percent {
+    color: var(--green);
+  }
+
+  .losses {
+    color: var(--red600);
+  }
+}
+
+/**
+  * Match
+  */
+.match {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2px 4px;
+
+  &.win {
+    .champion::before {
+      border-color: var(--blue500);
+    }
+
+    .stats {
+      color: var(--blue500);
+    }
+  }
+
+  .champion {
+    position: relative;
+
+    @include strict_size(30px, 30px);
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    &::before {
+      content: '';
+
+      display: block;
+
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      width: 100%;
+      height: 100%;
+
+      border: 2px solid var(--red600);
+    }
+  }
+
+  &__stats {
+    .stats {
+      text-align: center;
+
+      color: var(--red600);
+    }
+
+    .pings {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0 2px;
+
+      img {
+        margin-left: -12px;
+
+        @include strict_size(10px, 10px);
+      }
+
+      p {
+        text-align: center;
+        color: var(--yellow);
+      }
+    }
+  }
+}

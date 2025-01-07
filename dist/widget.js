@@ -118,7 +118,7 @@ var createMatch = (assets2, participant) => {
   const countPings = Object.keys(participant).filter((k) => k.toLowerCase().includes("pings")).reduce((sum, key) => sum + Number(participant[key]), 0);
   const _match = $("<div>").addClass("match");
   const _champion = $("<div>").addClass("champion");
-  const _matchStats = $("<div>").addClass("match-stats");
+  const _matchStats = $("<div>").addClass("match__stats");
   const _stats = $("<p>").addClass("stats");
   const _bait = $("<img>").addClass("bait").attr("src", assets2.baitPing);
   const _count = $("<p>").text(`${countPings}`);
@@ -3667,7 +3667,7 @@ var package_default = {
     build: "run-s build:**",
     "build:remove": "rm -rf dist",
     "build:widget": " npx esbuild src/widget.ts --bundle --outfile=dist/widget.js --platform=node",
-    "build:styles": "sass src/style.scss dist/style.css",
+    "build:styles": "sass src/styles/index.scss dist/style.css",
     "build:doc": "node src/utils/generate_doc.js"
   },
   repository: {

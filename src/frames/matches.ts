@@ -14,7 +14,7 @@ export const createMatch = (assets: Assets, participant: Participant) => {
   const _match = $('<div>').addClass('match');
 
   const _champion = $('<div>').addClass('champion');
-  const _matchStats = $('<div>').addClass('match-stats');
+  const _matchStats = $('<div>').addClass('match__stats');
   const _stats = $('<p>').addClass('stats');
 
   const _bait = $('<img>').addClass('bait').attr('src', assets.baitPing);
