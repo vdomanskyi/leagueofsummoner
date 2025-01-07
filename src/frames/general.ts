@@ -27,7 +27,7 @@ const createCharacter = (character: Character, user: User) => {
 };
 
 const createCharacterStats = (character: Character) => {
-  const _characterStats = $('<div>').addClass('character-stats');
+  const _characterStats = $('<div>').addClass('win-total-loss-stats');
 
   const _wins = $('<p>').addClass('wins').text(`${character.wins}W`);
   const _losses = $('<p>').addClass('losses').text(`${character.losses}L`);

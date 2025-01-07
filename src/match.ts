@@ -1,199 +1,31 @@
-"use strict";
-
-// src/assets.ts
-var assets = {
-  profileIcon: "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons",
-  rankedFolder: "https://raw.communitydragon.org/latest/game/assets/loadouts/regalia/crests/ranked",
-  bannerFolder: "https://raw.communitydragon.org/latest/game/assets/loadouts/regalia/banners",
-  championIcons: "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons",
-  baitPing: "https://raw.communitydragon.org/13.17/game/assets/ux/minimap/pings/bait.png",
-  banner: {
-    IRON: "01_iron_banner.png",
-    BRONZE: "02_bronze_banner.png",
-    SILVER: "03_silver_banner.png",
-    GOLD: "04_gold_banner.png",
-    PLATINUM: "05_platinum_banner.png",
-    EMERALD: "emerald_banner.png",
-    DIAMOND: "06_diamond_banner.png",
-    MASTER: "07_master_banner.png",
-    GRANDMASTER: "08_grandmaster_banner.png",
-    CHALLENGER: "09_challenger_banner.png"
-  },
-  ranked: {
-    IRON: "01_iron/01_iron_base.png",
-    BRONZE: "02_bronze/02_bronze_base.png",
-    SILVER: "03_silver/03_silver_base.png",
-    GOLD: "04_gold/04_gold_base.png",
-    PLATINUM: "05_platinum/05_platinum_base_new.png",
-    EMERALD: "emerald/emerald_base.png",
-    DIAMOND: "06_diamond/06_diamond_base.png",
-    MASTER: "07_master/07_master_base.png",
-    GRANDMASTER: "08_grandmaster/08_grandmaster_base.png",
-    CHALLENGER: "09_challenger/09_challenger_base.png"
-  }
-};
-var assets_default = assets;
-
-// src/requests.ts
-var proxy = axios.create({
-  baseURL: "https://kef3rty3rivaxm5m772uucj7de0qhias.lambda-url.eu-north-1.on.aws/",
-  headers: {
-    "Content-Type": "text/plain"
-  }
-});
-var requests_default = {
-  general: {
-    getUser: async function(fields2) {
-      const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${fields2.gameName}/${fields2.tagLine}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
-    },
-    getCharacterList: async function(fields2, summonerId) {
-      const rawPath = `https://${fields2.regionalRouting}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
-    },
-    getSummonerByPUUID: async function(fields2, puuid) {
-      const rawPath = `https://${fields2.regionalRouting}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
-    }
-  },
-  match: {
-    getMatchList: async function(fields2, puuid, count = 7) {
-      const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?type=${fields2.matchesType}&start=0&count=${count}&api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
-    },
-    getMatchById: async function(fields2, matchId) {
-      const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/lol/match/v5/matches/${matchId}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
-    }
-  }
-  // champion: {
-  //   getChampionTop: async function (fields: Fields, puuid: string, count = 3) {
-  //     const rawPath = `https://${fields.regionalRouting}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}/top?count=${count}&api_key=${fields.API_KEY}`;
-  //     return proxy.post('', { rawPath });
-  //   },
-  // },
-};
-
-// src/frames/general.ts
-var createAvatar = (assets2, summoner, character, hasDivisions2) => {
-  const _avatar = $("<div>").addClass("avatar");
-  const _icon = $("<img>").addClass("icon").attr("src", `${assets2.profileIcon}/${summoner.profileIconId}.jpg`);
-  const _ranked = $("<img>").addClass("ranked").attr("src", `${assets2.rankedFolder}/${assets2.ranked[character.tier]}`);
-  if (hasDivisions2) _avatar.append($("<div>").addClass("division").append($("<p>").text(character.rank)));
-  _avatar.append([_ranked, _icon]);
-  return _avatar;
-};
-var createCharacter = (character, user) => {
-  const _character = $("<div>").addClass("character");
-  const _lp = $("<p>").addClass("lp").text(`${character.leaguePoints}LP`);
-  const _username = $("<div>").addClass("username").append($("<p>").text(`${user.gameName}#${user.tagLine}`));
-  _character.append([_lp, _username]);
-  return _character;
-};
-var createCharacterStats = (character) => {
-  const _characterStats = $("<div>").addClass("win-total-loss-stats");
-  const _wins = $("<p>").addClass("wins").text(`${character.wins}W`);
-  const _losses = $("<p>").addClass("losses").text(`${character.losses}L`);
-  const _total = $("<p>").addClass("total").text(`${character.wins + character.losses}`);
-  if (character.wins > 0) {
-    const value = (character.wins / (character.wins + character.losses) * 100).toFixed(0);
-    const _percent = $("<span>").text(`(${value}%)`);
-    _total.append(_percent);
-  }
-  _characterStats.append([_wins, _total, _losses]);
-  return _characterStats;
-};
-var general_default = async (assets2, { summoner, user, character }, hasDivisions2) => {
-  if (!user || !character || !summoner) return;
-  return [
-    createAvatar(assets2, summoner, character, hasDivisions2),
-    createCharacter(character, user),
-    createCharacterStats(character)
-  ];
-};
-
-// src/frames/matches.ts
-var getParticipant = (user, match) => match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
-var createMatch = (assets2, participant) => {
-  const countPings = Object.keys(participant).filter((k) => k.toLowerCase().includes("pings")).reduce((sum, key) => sum + Number(participant[key]), 0);
-  const _match = $("<div>").addClass("match");
-  const _champion = $("<div>").addClass("champion");
-  const _matchStats = $("<div>").addClass("match-stats");
-  const _stats = $("<p>").addClass("stats");
-  const _bait = $("<img>").addClass("bait").attr("src", assets2.baitPing);
-  const _count = $("<p>").text(`${countPings}`);
-  const _pings = $("<div>").addClass("pings");
-  _stats.text(`${participant.kills}/${participant.deaths}/${participant.assists}`);
-  _pings.append([_bait, _count]);
-  _champion.append($("<img>").attr("src", `${assets2.championIcons}/${participant.championId}.png`));
-  _matchStats.append([_stats, _pings]);
-  _match.append([_champion, _matchStats]);
-  if (participant.win) _match.addClass("win");
-  return _match;
-};
-var createLastMatch = (assets2, participant) => {
-  $(".last-match").remove();
-  const _lastMatch = $("<div>").addClass("last-match");
-  const _title = $("<p>").addClass("title");
-  const _last = $("<span>").addClass("last").text("Last");
-  const _match = $("<span>").addClass("match").text("match:");
-  _title.append([_last, _match]);
-  _lastMatch.append(_title, createMatch(assets2, participant));
-  return _lastMatch;
-};
-var matches_default = async (assets2, { user, matchIds }, fields2) => {
-  if (!user) return;
-  const matches = [];
-  const _list = [];
-  const _previousMatches = [];
-  let _lastMatch = null;
-  await Promise.all(
-    matchIds.map(
-      (id) => requests_default.match.getMatchById(fields2, id).then((res) => {
-        matches.push(res.data);
-      })
-    )
-  );
-  matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
-  matches.forEach((match, index) => {
-    const participant = getParticipant(user, match);
-    if (!participant) return;
-    index ? _previousMatches.push(createMatch(assets2, participant)) : _lastMatch = createLastMatch(assets2, participant);
-  });
-  if (_lastMatch) _list.push(_lastMatch);
-  _list.push($("<div>").addClass("matches").append(_previousMatches));
-  return _list;
-};
-
-// src/match.ts
-var match_default = {
+export default {
   metadata: {
-    dataVersion: "2",
-    matchId: "EUW1_7248179291",
+    dataVersion: '2',
+    matchId: 'EUW1_7248179291',
     participants: [
-      "-SFCZMzQArNXxqT-Hpnn5i0wvV8a3bXI3Ijr36DBtGYv3NfBG95mjIM7aj5_0U9UR6gYIqrYXq-W1A",
-      "9_YlbNfd00yj7SnT7Iois7lL-qf0KfXBdgjelDuSeEtW8OEqXbaFtd-fBzmmTW3oc7P00u4N2zoXZA",
-      "o-TQVcUcw2NbYt8FmoLGytVKFTvtvi3Igg7GrzeoDcT_jAL4qL3m-gpMgwL_pFADdxN9nsfLG6dtng",
-      "azOEqgu5Q7yrphd8tT6QLjLcP60ETUPrGv_vgTGsc35sUtDlGrZVh0xQbflWmetip2Ed3UXvbBqQaQ",
-      "MRqF20tTQfXsSuiGxfcbqQJzvWCiBJnEirkwGs3ozVHZUlyEjWODZTESw_FYLz7yNKFKnA9h0AoxOw",
-      "Ngg7iehbsWcXPvt_7WOytBuXC2aGrLUHNFRuvMurXWimRoq4FcJrpfFWaTepJj11puNX2wMtafCzLg",
-      "Mp4rblWMm0tvZlP6gQmrj2Ilg4mL5rCT1gc_FJmJojc2p65crHgmDqq75NBlHcFa3qhw0JHk2zJrwQ",
-      "oALJNXVSTXtmiMocDQ68ldFNO1skuOpmUAL6mKZKfr53q9xHXMs4hoMWGOTwyJIumyOdhx_3wEyIAA",
-      "3V3tC03533UD1rLicO0gTOjnI1KeS0pIjfoBAbkYD01t3mCiYvegchCMkrwWL4a5ZduwMEpJ2GorsQ",
-      "5rre7wUKajrakC0qxyssNDwKNj2Hbfp9MTmG9DSxfJQUF4hHu8UDPC9AXwt-sPeDUKlmxLvBOLwX7A"
-    ]
+      '-SFCZMzQArNXxqT-Hpnn5i0wvV8a3bXI3Ijr36DBtGYv3NfBG95mjIM7aj5_0U9UR6gYIqrYXq-W1A',
+      '9_YlbNfd00yj7SnT7Iois7lL-qf0KfXBdgjelDuSeEtW8OEqXbaFtd-fBzmmTW3oc7P00u4N2zoXZA',
+      'o-TQVcUcw2NbYt8FmoLGytVKFTvtvi3Igg7GrzeoDcT_jAL4qL3m-gpMgwL_pFADdxN9nsfLG6dtng',
+      'azOEqgu5Q7yrphd8tT6QLjLcP60ETUPrGv_vgTGsc35sUtDlGrZVh0xQbflWmetip2Ed3UXvbBqQaQ',
+      'MRqF20tTQfXsSuiGxfcbqQJzvWCiBJnEirkwGs3ozVHZUlyEjWODZTESw_FYLz7yNKFKnA9h0AoxOw',
+      'Ngg7iehbsWcXPvt_7WOytBuXC2aGrLUHNFRuvMurXWimRoq4FcJrpfFWaTepJj11puNX2wMtafCzLg',
+      'Mp4rblWMm0tvZlP6gQmrj2Ilg4mL5rCT1gc_FJmJojc2p65crHgmDqq75NBlHcFa3qhw0JHk2zJrwQ',
+      'oALJNXVSTXtmiMocDQ68ldFNO1skuOpmUAL6mKZKfr53q9xHXMs4hoMWGOTwyJIumyOdhx_3wEyIAA',
+      '3V3tC03533UD1rLicO0gTOjnI1KeS0pIjfoBAbkYD01t3mCiYvegchCMkrwWL4a5ZduwMEpJ2GorsQ',
+      '5rre7wUKajrakC0qxyssNDwKNj2Hbfp9MTmG9DSxfJQUF4hHu8UDPC9AXwt-sPeDUKlmxLvBOLwX7A',
+    ],
   },
   info: {
-    endOfGameResult: "GameComplete",
+    endOfGameResult: 'GameComplete',
     gameCreation: 1735560507671,
     gameDuration: 1743,
     gameEndTimestamp: 1735562276387,
     gameId: 7248179291,
-    gameMode: "CLASSIC",
-    gameName: "teambuilder-match-7248179291",
+    gameMode: 'CLASSIC',
+    gameName: 'teambuilder-match-7248179291',
     gameStartTimestamp: 1735560533223,
-    gameType: "MATCHED_GAME",
-    gameVersion: "14.24.644.2327",
+    gameType: 'MATCHED_GAME',
+    gameVersion: '14.24.644.2327',
     mapId: 11,
     participants: [
       {
@@ -204,7 +36,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 7,
         challenges: {
-          "12AssistStreakCount": 0,
+          '12AssistStreakCount': 0,
           HealFromMapSources: 50.48050308227539,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -335,12 +167,12 @@ var match_default = {
           voidMonsterKill: 5,
           wardTakedowns: 2,
           wardTakedownsBefore20M: 0,
-          wardsGuarded: 0
+          wardsGuarded: 0,
         },
         champExperience: 16576,
         champLevel: 17,
         championId: 122,
-        championName: "Darius",
+        championName: 'Darius',
         championTransform: 0,
         commandPings: 18,
         consumablesPurchased: 3,
@@ -366,7 +198,7 @@ var match_default = {
         goldEarned: 12705,
         goldSpent: 10583,
         holdPings: 0,
-        individualPosition: "TOP",
+        individualPosition: 'TOP',
         inhibitorKills: 0,
         inhibitorTakedowns: 1,
         inhibitorsLost: 0,
@@ -380,7 +212,7 @@ var match_default = {
         itemsPurchased: 19,
         killingSprees: 1,
         kills: 7,
-        lane: "JUNGLE",
+        lane: 'JUNGLE',
         largestCriticalStrike: 0,
         largestKillingSpree: 6,
         largestMultiKill: 2,
@@ -400,7 +232,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 0,
         neutralMinionsKilled: 6,
@@ -416,58 +248,58 @@ var match_default = {
           statPerks: {
             defense: 5001,
             flex: 5008,
-            offense: 5005
+            offense: 5005,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 8010,
                   var1: 685,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 9111,
                   var1: 1238,
                   var2: 180,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 9104,
                   var1: 14,
                   var2: 50,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8299,
                   var1: 604,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8e3
+              style: 8000,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 8234,
                   var1: 9690,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8275,
                   var1: 9,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8200
-            }
-          ]
+              style: 8200,
+            },
+          ],
         },
         physicalDamageDealt: 153524,
         physicalDamageDealtToChampions: 17300,
@@ -482,12 +314,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 3546,
         pushPings: 0,
-        puuid: "-SFCZMzQArNXxqT-Hpnn5i0wvV8a3bXI3Ijr36DBtGYv3NfBG95mjIM7aj5_0U9UR6gYIqrYXq-W1A",
+        puuid: '-SFCZMzQArNXxqT-Hpnn5i0wvV8a3bXI3Ijr36DBtGYv3NfBG95mjIM7aj5_0U9UR6gYIqrYXq-W1A',
         quadraKills: 0,
         retreatPings: 0,
-        riotIdGameName: "T1 Kyle",
-        riotIdTagline: "EUW01",
-        role: "NONE",
+        riotIdGameName: 'T1 Kyle',
+        riotIdTagline: 'EUW01',
+        role: 'NONE',
         sightWardsBoughtInGame: 0,
         spell1Casts: 79,
         spell2Casts: 119,
@@ -498,12 +330,12 @@ var match_default = {
         summoner1Id: 6,
         summoner2Casts: 4,
         summoner2Id: 4,
-        summonerId: "ntJ3yVxCPrZVQigJzgxAMNQxb5Z3MEQzfn03rNSZhOezWHFbT2LnzZEFbg",
+        summonerId: 'ntJ3yVxCPrZVQigJzgxAMNQxb5Z3MEQzfn03rNSZhOezWHFbT2LnzZEFbg',
         summonerLevel: 64,
-        summonerName: "KYLE BAEK",
+        summonerName: 'KYLE BAEK',
         teamEarlySurrendered: false,
         teamId: 100,
-        teamPosition: "TOP",
+        teamPosition: 'TOP',
         timeCCingOthers: 22,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 0,
@@ -531,7 +363,7 @@ var match_default = {
         visionWardsBoughtInGame: 2,
         wardsKilled: 2,
         wardsPlaced: 8,
-        win: true
+        win: true,
       },
       {
         allInPings: 1,
@@ -541,7 +373,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 4,
         challenges: {
-          "12AssistStreakCount": 0,
+          '12AssistStreakCount': 0,
           HealFromMapSources: 0,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -669,12 +501,12 @@ var match_default = {
           voidMonsterKill: 6,
           wardTakedowns: 0,
           wardTakedownsBefore20M: 0,
-          wardsGuarded: 0
+          wardsGuarded: 0,
         },
         champExperience: 14661,
         champLevel: 15,
         championId: 32,
-        championName: "Amumu",
+        championName: 'Amumu',
         championTransform: 0,
         commandPings: 1,
         consumablesPurchased: 0,
@@ -700,7 +532,7 @@ var match_default = {
         goldEarned: 11384,
         goldSpent: 10600,
         holdPings: 0,
-        individualPosition: "JUNGLE",
+        individualPosition: 'JUNGLE',
         inhibitorKills: 0,
         inhibitorTakedowns: 0,
         inhibitorsLost: 0,
@@ -714,7 +546,7 @@ var match_default = {
         itemsPurchased: 14,
         killingSprees: 1,
         kills: 4,
-        lane: "JUNGLE",
+        lane: 'JUNGLE',
         largestCriticalStrike: 0,
         largestKillingSpree: 4,
         largestMultiKill: 1,
@@ -734,7 +566,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 0,
         neutralMinionsKilled: 179,
@@ -750,58 +582,58 @@ var match_default = {
           statPerks: {
             defense: 5001,
             flex: 5008,
-            offense: 5005
+            offense: 5005,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 8010,
                   var1: 585,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 9111,
                   var1: 876,
                   var2: 200,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 9105,
                   var1: 11,
                   var2: 50,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8299,
                   var1: 354,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8e3
+              style: 8000,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 8126,
                   var1: 615,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8106,
                   var1: 4,
                   var2: 26,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8100
-            }
-          ]
+              style: 8100,
+            },
+          ],
         },
         physicalDamageDealt: 25468,
         physicalDamageDealtToChampions: 939,
@@ -816,12 +648,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 3523,
         pushPings: 0,
-        puuid: "9_YlbNfd00yj7SnT7Iois7lL-qf0KfXBdgjelDuSeEtW8OEqXbaFtd-fBzmmTW3oc7P00u4N2zoXZA",
+        puuid: '9_YlbNfd00yj7SnT7Iois7lL-qf0KfXBdgjelDuSeEtW8OEqXbaFtd-fBzmmTW3oc7P00u4N2zoXZA',
         quadraKills: 0,
         retreatPings: 2,
-        riotIdGameName: "Sigma Erik",
-        riotIdTagline: "EUW",
-        role: "NONE",
+        riotIdGameName: 'Sigma Erik',
+        riotIdTagline: 'EUW',
+        role: 'NONE',
         sightWardsBoughtInGame: 0,
         spell1Casts: 73,
         spell2Casts: 94,
@@ -832,12 +664,12 @@ var match_default = {
         summoner1Id: 11,
         summoner2Casts: 4,
         summoner2Id: 4,
-        summonerId: "z4I2Zwoapoy6zo7oFskKtwrEHcJO8UWzeGcCx1I4OZQUKtIP",
+        summonerId: 'z4I2Zwoapoy6zo7oFskKtwrEHcJO8UWzeGcCx1I4OZQUKtIP',
         summonerLevel: 608,
-        summonerName: "Sigma Erik",
+        summonerName: 'Sigma Erik',
         teamEarlySurrendered: false,
         teamId: 100,
-        teamPosition: "JUNGLE",
+        teamPosition: 'JUNGLE',
         timeCCingOthers: 36,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 123,
@@ -865,7 +697,7 @@ var match_default = {
         visionWardsBoughtInGame: 0,
         wardsKilled: 0,
         wardsPlaced: 0,
-        win: true
+        win: true,
       },
       {
         allInPings: 9,
@@ -875,7 +707,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 3,
         challenges: {
-          "12AssistStreakCount": 0,
+          '12AssistStreakCount': 0,
           HealFromMapSources: 460,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -1003,12 +835,12 @@ var match_default = {
           voidMonsterKill: 1,
           wardTakedowns: 2,
           wardTakedownsBefore20M: 1,
-          wardsGuarded: 0
+          wardsGuarded: 0,
         },
         champExperience: 16410,
         champLevel: 16,
         championId: 112,
-        championName: "Viktor",
+        championName: 'Viktor',
         championTransform: 0,
         commandPings: 18,
         consumablesPurchased: 3,
@@ -1034,7 +866,7 @@ var match_default = {
         goldEarned: 11893,
         goldSpent: 10035,
         holdPings: 0,
-        individualPosition: "MIDDLE",
+        individualPosition: 'MIDDLE',
         inhibitorKills: 0,
         inhibitorTakedowns: 1,
         inhibitorsLost: 0,
@@ -1048,7 +880,7 @@ var match_default = {
         itemsPurchased: 20,
         killingSprees: 1,
         kills: 3,
-        lane: "MIDDLE",
+        lane: 'MIDDLE',
         largestCriticalStrike: 0,
         largestKillingSpree: 2,
         largestMultiKill: 1,
@@ -1068,7 +900,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 3,
         neutralMinionsKilled: 8,
@@ -1084,58 +916,58 @@ var match_default = {
           statPerks: {
             defense: 5001,
             flex: 5008,
-            offense: 5005
+            offense: 5005,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 8230,
                   var1: 22,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8226,
                   var1: 250,
                   var2: 1268,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8210,
                   var1: 21,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8237,
                   var1: 815,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8200
+              style: 8200,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 8473,
                   var1: 764,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8401,
                   var1: 993,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8400
-            }
-          ]
+              style: 8400,
+            },
+          ],
         },
         physicalDamageDealt: 14056,
         physicalDamageDealtToChampions: 1013,
@@ -1150,12 +982,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 6768,
         pushPings: 0,
-        puuid: "o-TQVcUcw2NbYt8FmoLGytVKFTvtvi3Igg7GrzeoDcT_jAL4qL3m-gpMgwL_pFADdxN9nsfLG6dtng",
+        puuid: 'o-TQVcUcw2NbYt8FmoLGytVKFTvtvi3Igg7GrzeoDcT_jAL4qL3m-gpMgwL_pFADdxN9nsfLG6dtng',
         quadraKills: 0,
         retreatPings: 3,
-        riotIdGameName: "Gemtin",
-        riotIdTagline: "EUW",
-        role: "SOLO",
+        riotIdGameName: 'Gemtin',
+        riotIdTagline: 'EUW',
+        role: 'SOLO',
         sightWardsBoughtInGame: 0,
         spell1Casts: 108,
         spell2Casts: 21,
@@ -1166,12 +998,12 @@ var match_default = {
         summoner1Id: 12,
         summoner2Casts: 4,
         summoner2Id: 4,
-        summonerId: "K73yXFrahMO6LftqEdKnU6VPJa_h7vS-1XGol-H5SlvRL-_Q",
+        summonerId: 'K73yXFrahMO6LftqEdKnU6VPJa_h7vS-1XGol-H5SlvRL-_Q',
         summonerLevel: 207,
-        summonerName: "Gemtin",
+        summonerName: 'Gemtin',
         teamEarlySurrendered: false,
         teamId: 100,
-        teamPosition: "MIDDLE",
+        teamPosition: 'MIDDLE',
         timeCCingOthers: 21,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 0,
@@ -1199,7 +1031,7 @@ var match_default = {
         visionWardsBoughtInGame: 1,
         wardsKilled: 2,
         wardsPlaced: 11,
-        win: true
+        win: true,
       },
       {
         allInPings: 0,
@@ -1209,7 +1041,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 9,
         challenges: {
-          "12AssistStreakCount": 0,
+          '12AssistStreakCount': 0,
           HealFromMapSources: 0,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -1339,12 +1171,12 @@ var match_default = {
           voidMonsterKill: 1,
           wardTakedowns: 7,
           wardTakedownsBefore20M: 1,
-          wardsGuarded: 0
+          wardsGuarded: 0,
         },
         champExperience: 12168,
         champLevel: 14,
         championId: 222,
-        championName: "Jinx",
+        championName: 'Jinx',
         championTransform: 0,
         commandPings: 9,
         consumablesPurchased: 1,
@@ -1370,7 +1202,7 @@ var match_default = {
         goldEarned: 14165,
         goldSpent: 12300,
         holdPings: 0,
-        individualPosition: "BOTTOM",
+        individualPosition: 'BOTTOM',
         inhibitorKills: 0,
         inhibitorTakedowns: 1,
         inhibitorsLost: 0,
@@ -1384,7 +1216,7 @@ var match_default = {
         itemsPurchased: 20,
         killingSprees: 2,
         kills: 9,
-        lane: "BOTTOM",
+        lane: 'BOTTOM',
         largestCriticalStrike: 733,
         largestKillingSpree: 5,
         largestMultiKill: 1,
@@ -1404,7 +1236,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 0,
         neutralMinionsKilled: 2,
@@ -1420,58 +1252,58 @@ var match_default = {
           statPerks: {
             defense: 5011,
             flex: 5008,
-            offense: 5005
+            offense: 5005,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 8008,
                   var1: 891,
                   var2: 891,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8009,
                   var1: 1519,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 9103,
                   var1: 24,
                   var2: 50,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8017,
                   var1: 1441,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8e3
+              style: 8000,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 8233,
                   var1: 23,
                   var2: 10,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8236,
                   var1: 14,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8200
-            }
-          ]
+              style: 8200,
+            },
+          ],
         },
         physicalDamageDealt: 189421,
         physicalDamageDealtToChampions: 33468,
@@ -1486,12 +1318,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 6760,
         pushPings: 1,
-        puuid: "azOEqgu5Q7yrphd8tT6QLjLcP60ETUPrGv_vgTGsc35sUtDlGrZVh0xQbflWmetip2Ed3UXvbBqQaQ",
+        puuid: 'azOEqgu5Q7yrphd8tT6QLjLcP60ETUPrGv_vgTGsc35sUtDlGrZVh0xQbflWmetip2Ed3UXvbBqQaQ',
         quadraKills: 0,
         retreatPings: 2,
-        riotIdGameName: "Snakey",
-        riotIdTagline: "Noob",
-        role: "CARRY",
+        riotIdGameName: 'Snakey',
+        riotIdTagline: 'Noob',
+        role: 'CARRY',
         sightWardsBoughtInGame: 0,
         spell1Casts: 110,
         spell2Casts: 40,
@@ -1502,12 +1334,12 @@ var match_default = {
         summoner1Id: 21,
         summoner2Casts: 3,
         summoner2Id: 4,
-        summonerId: "sudFvY4AWsfvz7lI3E1knZlfBPTm_OtlcW_C3sd59k8UmDrN",
+        summonerId: 'sudFvY4AWsfvz7lI3E1knZlfBPTm_OtlcW_C3sd59k8UmDrN',
         summonerLevel: 435,
-        summonerName: "Sna\u03BAey",
+        summonerName: 'Snaκey',
         teamEarlySurrendered: false,
         teamId: 100,
-        teamPosition: "BOTTOM",
+        teamPosition: 'BOTTOM',
         timeCCingOthers: 5,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 2,
@@ -1535,7 +1367,7 @@ var match_default = {
         visionWardsBoughtInGame: 0,
         wardsKilled: 7,
         wardsPlaced: 9,
-        win: true
+        win: true,
       },
       {
         allInPings: 0,
@@ -1545,7 +1377,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 0,
         challenges: {
-          "12AssistStreakCount": 1,
+          '12AssistStreakCount': 1,
           HealFromMapSources: 0,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -1675,12 +1507,12 @@ var match_default = {
           voidMonsterKill: 1,
           wardTakedowns: 5,
           wardTakedownsBefore20M: 4,
-          wardsGuarded: 0
+          wardsGuarded: 0,
         },
         champExperience: 10852,
         champLevel: 13,
         championId: 902,
-        championName: "Milio",
+        championName: 'Milio',
         championTransform: 0,
         commandPings: 0,
         consumablesPurchased: 7,
@@ -1706,7 +1538,7 @@ var match_default = {
         goldEarned: 7873,
         goldSpent: 6175,
         holdPings: 0,
-        individualPosition: "UTILITY",
+        individualPosition: 'UTILITY',
         inhibitorKills: 1,
         inhibitorTakedowns: 1,
         inhibitorsLost: 0,
@@ -1720,7 +1552,7 @@ var match_default = {
         itemsPurchased: 20,
         killingSprees: 0,
         kills: 0,
-        lane: "BOTTOM",
+        lane: 'BOTTOM',
         largestCriticalStrike: 0,
         largestKillingSpree: 0,
         largestMultiKill: 0,
@@ -1740,7 +1572,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 0,
         neutralMinionsKilled: 0,
@@ -1756,58 +1588,58 @@ var match_default = {
           statPerks: {
             defense: 5011,
             flex: 5008,
-            offense: 5007
+            offense: 5007,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 8214,
                   var1: 684,
                   var2: 1062,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8226,
                   var1: 250,
                   var2: 207,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8210,
                   var1: 15,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8237,
                   var1: 386,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8200
+              style: 8200,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 8473,
                   var1: 390,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8453,
                   var1: 1159,
                   var2: 1254,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8400
-            }
-          ]
+              style: 8400,
+            },
+          ],
         },
         physicalDamageDealt: 3550,
         physicalDamageDealtToChampions: 644,
@@ -1822,12 +1654,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 25,
         pushPings: 0,
-        puuid: "MRqF20tTQfXsSuiGxfcbqQJzvWCiBJnEirkwGs3ozVHZUlyEjWODZTESw_FYLz7yNKFKnA9h0AoxOw",
+        puuid: 'MRqF20tTQfXsSuiGxfcbqQJzvWCiBJnEirkwGs3ozVHZUlyEjWODZTESw_FYLz7yNKFKnA9h0AoxOw',
         quadraKills: 0,
         retreatPings: 0,
-        riotIdGameName: "KPOP Resu ",
-        riotIdTagline: "EUW",
-        role: "SUPPORT",
+        riotIdGameName: 'KPOP Resu ',
+        riotIdTagline: 'EUW',
+        role: 'SUPPORT',
         sightWardsBoughtInGame: 0,
         spell1Casts: 47,
         spell2Casts: 31,
@@ -1838,12 +1670,12 @@ var match_default = {
         summoner1Id: 4,
         summoner2Casts: 5,
         summoner2Id: 7,
-        summonerId: "NtYP_TWqOkptNXL1BBkFIA0Eo8urSgAqaGyOF90xZP19gOiUhB7BBxOAuQ",
+        summonerId: 'NtYP_TWqOkptNXL1BBkFIA0Eo8urSgAqaGyOF90xZP19gOiUhB7BBxOAuQ',
         summonerLevel: 221,
-        summonerName: "KPOP Resu ",
+        summonerName: 'KPOP Resu ',
         teamEarlySurrendered: false,
         teamId: 100,
-        teamPosition: "UTILITY",
+        teamPosition: 'UTILITY',
         timeCCingOthers: 23,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 0,
@@ -1871,7 +1703,7 @@ var match_default = {
         visionWardsBoughtInGame: 5,
         wardsKilled: 5,
         wardsPlaced: 25,
-        win: true
+        win: true,
       },
       {
         allInPings: 0,
@@ -1881,7 +1713,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 1,
         challenges: {
-          "12AssistStreakCount": 0,
+          '12AssistStreakCount': 0,
           HealFromMapSources: 0,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -2007,12 +1839,12 @@ var match_default = {
           voidMonsterKill: 0,
           wardTakedowns: 0,
           wardTakedownsBefore20M: 0,
-          wardsGuarded: 0
+          wardsGuarded: 0,
         },
         champExperience: 14815,
         champLevel: 16,
         championId: 14,
-        championName: "Sion",
+        championName: 'Sion',
         championTransform: 0,
         commandPings: 7,
         consumablesPurchased: 1,
@@ -2036,9 +1868,9 @@ var match_default = {
         gameEndedInSurrender: false,
         getBackPings: 10,
         goldEarned: 10152,
-        goldSpent: 1e4,
+        goldSpent: 10000,
         holdPings: 0,
-        individualPosition: "TOP",
+        individualPosition: 'TOP',
         inhibitorKills: 0,
         inhibitorTakedowns: 0,
         inhibitorsLost: 1,
@@ -2052,7 +1884,7 @@ var match_default = {
         itemsPurchased: 18,
         killingSprees: 0,
         kills: 1,
-        lane: "TOP",
+        lane: 'TOP',
         largestCriticalStrike: 0,
         largestKillingSpree: 0,
         largestMultiKill: 1,
@@ -2072,7 +1904,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 0,
         neutralMinionsKilled: 0,
@@ -2088,58 +1920,58 @@ var match_default = {
           statPerks: {
             defense: 5001,
             flex: 5008,
-            offense: 5005
+            offense: 5005,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 8437,
                   var1: 1304,
                   var2: 917,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8446,
                   var1: 2324,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8429,
                   var1: 58,
                   var2: 14,
-                  var3: 12
+                  var3: 12,
                 },
                 {
                   perk: 8451,
                   var1: 284,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8400
+              style: 8400,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 9105,
                   var1: 21,
                   var2: 50,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 9111,
                   var1: 1288,
                   var2: 140,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8e3
-            }
-          ]
+              style: 8000,
+            },
+          ],
         },
         physicalDamageDealt: 89756,
         physicalDamageDealtToChampions: 6986,
@@ -2154,12 +1986,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 4655,
         pushPings: 0,
-        puuid: "Ngg7iehbsWcXPvt_7WOytBuXC2aGrLUHNFRuvMurXWimRoq4FcJrpfFWaTepJj11puNX2wMtafCzLg",
+        puuid: 'Ngg7iehbsWcXPvt_7WOytBuXC2aGrLUHNFRuvMurXWimRoq4FcJrpfFWaTepJj11puNX2wMtafCzLg',
         quadraKills: 0,
         retreatPings: 5,
-        riotIdGameName: "Socks",
-        riotIdTagline: "AHH",
-        role: "SOLO",
+        riotIdGameName: 'Socks',
+        riotIdTagline: 'AHH',
+        role: 'SOLO',
         sightWardsBoughtInGame: 0,
         spell1Casts: 89,
         spell2Casts: 65,
@@ -2170,12 +2002,12 @@ var match_default = {
         summoner1Id: 4,
         summoner2Casts: 2,
         summoner2Id: 12,
-        summonerId: "i2Lf4KO2nNndhtqwAC-4fSoDhnPYdCbGXAKUN5uzQNkM3mV6",
+        summonerId: 'i2Lf4KO2nNndhtqwAC-4fSoDhnPYdCbGXAKUN5uzQNkM3mV6',
         summonerLevel: 443,
-        summonerName: "DerMitDerSocke",
+        summonerName: 'DerMitDerSocke',
         teamEarlySurrendered: false,
         teamId: 200,
-        teamPosition: "TOP",
+        teamPosition: 'TOP',
         timeCCingOthers: 48,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 0,
@@ -2203,7 +2035,7 @@ var match_default = {
         visionWardsBoughtInGame: 0,
         wardsKilled: 0,
         wardsPlaced: 7,
-        win: false
+        win: false,
       },
       {
         allInPings: 2,
@@ -2213,7 +2045,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 4,
         challenges: {
-          "12AssistStreakCount": 0,
+          '12AssistStreakCount': 0,
           HealFromMapSources: 152,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -2339,12 +2171,12 @@ var match_default = {
           voidMonsterKill: 2,
           wardTakedowns: 2,
           wardTakedownsBefore20M: 1,
-          wardsGuarded: 1
+          wardsGuarded: 1,
         },
         champExperience: 13381,
         champLevel: 15,
         championId: 120,
-        championName: "Hecarim",
+        championName: 'Hecarim',
         championTransform: 0,
         commandPings: 9,
         consumablesPurchased: 1,
@@ -2370,7 +2202,7 @@ var match_default = {
         goldEarned: 11226,
         goldSpent: 11125,
         holdPings: 0,
-        individualPosition: "JUNGLE",
+        individualPosition: 'JUNGLE',
         inhibitorKills: 0,
         inhibitorTakedowns: 0,
         inhibitorsLost: 1,
@@ -2384,7 +2216,7 @@ var match_default = {
         itemsPurchased: 19,
         killingSprees: 1,
         kills: 4,
-        lane: "JUNGLE",
+        lane: 'JUNGLE',
         largestCriticalStrike: 0,
         largestKillingSpree: 2,
         largestMultiKill: 1,
@@ -2404,7 +2236,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 0,
         neutralMinionsKilled: 199,
@@ -2420,58 +2252,58 @@ var match_default = {
           statPerks: {
             defense: 5001,
             flex: 5008,
-            offense: 5008
+            offense: 5008,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 8230,
                   var1: 16,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8275,
                   var1: 24,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8234,
                   var1: 14312,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8232,
                   var1: 4,
                   var2: 20,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8200
+              style: 8200,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 9111,
                   var1: 617,
                   var2: 160,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 9105,
                   var1: 8,
                   var2: 40,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8e3
-            }
-          ]
+              style: 8000,
+            },
+          ],
         },
         physicalDamageDealt: 200158,
         physicalDamageDealtToChampions: 12072,
@@ -2486,12 +2318,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 1456,
         pushPings: 1,
-        puuid: "Mp4rblWMm0tvZlP6gQmrj2Ilg4mL5rCT1gc_FJmJojc2p65crHgmDqq75NBlHcFa3qhw0JHk2zJrwQ",
+        puuid: 'Mp4rblWMm0tvZlP6gQmrj2Ilg4mL5rCT1gc_FJmJojc2p65crHgmDqq75NBlHcFa3qhw0JHk2zJrwQ',
         quadraKills: 0,
         retreatPings: 0,
-        riotIdGameName: "lown",
-        riotIdTagline: "00000",
-        role: "NONE",
+        riotIdGameName: 'lown',
+        riotIdTagline: '00000',
+        role: 'NONE',
         sightWardsBoughtInGame: 0,
         spell1Casts: 449,
         spell2Casts: 92,
@@ -2502,12 +2334,12 @@ var match_default = {
         summoner1Id: 6,
         summoner2Casts: 18,
         summoner2Id: 11,
-        summonerId: "Z-Sc84K7hw9CV8QAZkoaaf82sAm_pms32meI54E5ZdWePvYQ",
+        summonerId: 'Z-Sc84K7hw9CV8QAZkoaaf82sAm_pms32meI54E5ZdWePvYQ',
         summonerLevel: 1248,
-        summonerName: "backroom visitor",
+        summonerName: 'backroom visitor',
         teamEarlySurrendered: false,
         teamId: 200,
-        teamPosition: "JUNGLE",
+        teamPosition: 'JUNGLE',
         timeCCingOthers: 29,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 135,
@@ -2535,7 +2367,7 @@ var match_default = {
         visionWardsBoughtInGame: 1,
         wardsKilled: 2,
         wardsPlaced: 1,
-        win: false
+        win: false,
       },
       {
         allInPings: 0,
@@ -2545,7 +2377,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 1,
         challenges: {
-          "12AssistStreakCount": 0,
+          '12AssistStreakCount': 0,
           HealFromMapSources: 250,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -2670,12 +2502,12 @@ var match_default = {
           voidMonsterKill: 0,
           wardTakedowns: 3,
           wardTakedownsBefore20M: 2,
-          wardsGuarded: 0
+          wardsGuarded: 0,
         },
         champExperience: 13171,
         champLevel: 15,
         championId: 238,
-        championName: "Zed",
+        championName: 'Zed',
         championTransform: 0,
         commandPings: 1,
         consumablesPurchased: 3,
@@ -2701,7 +2533,7 @@ var match_default = {
         goldEarned: 9802,
         goldSpent: 9600,
         holdPings: 0,
-        individualPosition: "MIDDLE",
+        individualPosition: 'MIDDLE',
         inhibitorKills: 0,
         inhibitorTakedowns: 0,
         inhibitorsLost: 1,
@@ -2715,7 +2547,7 @@ var match_default = {
         itemsPurchased: 22,
         killingSprees: 0,
         kills: 1,
-        lane: "MIDDLE",
+        lane: 'MIDDLE',
         largestCriticalStrike: 0,
         largestKillingSpree: 0,
         largestMultiKill: 1,
@@ -2735,7 +2567,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 3,
         neutralMinionsKilled: 0,
@@ -2751,58 +2583,58 @@ var match_default = {
           statPerks: {
             defense: 5001,
             flex: 5008,
-            offense: 5008
+            offense: 5008,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 8112,
                   var1: 690,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8143,
                   var1: 575,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8138,
                   var1: 6,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8106,
                   var1: 3,
                   var2: 21,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8100
+              style: 8100,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 8014,
                   var1: 193,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 9111,
                   var1: 484,
                   var2: 100,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8e3
-            }
-          ]
+              style: 8000,
+            },
+          ],
         },
         physicalDamageDealt: 120075,
         physicalDamageDealtToChampions: 8256,
@@ -2817,12 +2649,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 1229,
         pushPings: 0,
-        puuid: "oALJNXVSTXtmiMocDQ68ldFNO1skuOpmUAL6mKZKfr53q9xHXMs4hoMWGOTwyJIumyOdhx_3wEyIAA",
+        puuid: 'oALJNXVSTXtmiMocDQ68ldFNO1skuOpmUAL6mKZKfr53q9xHXMs4hoMWGOTwyJIumyOdhx_3wEyIAA',
         quadraKills: 0,
         retreatPings: 4,
-        riotIdGameName: "vujzaa",
-        riotIdTagline: "1998",
-        role: "SOLO",
+        riotIdGameName: 'vujzaa',
+        riotIdTagline: '1998',
+        role: 'SOLO',
         sightWardsBoughtInGame: 0,
         spell1Casts: 99,
         spell2Casts: 81,
@@ -2833,12 +2665,12 @@ var match_default = {
         summoner1Id: 4,
         summoner2Casts: 6,
         summoner2Id: 14,
-        summonerId: "sSqABOoc1KpykaT9PzVR_cZgSV5YOh-Kw3qD5-m0DPEIiqOoM45tQGHoGQ",
+        summonerId: 'sSqABOoc1KpykaT9PzVR_cZgSV5YOh-Kw3qD5-m0DPEIiqOoM45tQGHoGQ',
         summonerLevel: 374,
-        summonerName: "",
+        summonerName: '',
         teamEarlySurrendered: false,
         teamId: 200,
-        teamPosition: "MIDDLE",
+        teamPosition: 'MIDDLE',
         timeCCingOthers: 3,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 0,
@@ -2866,7 +2698,7 @@ var match_default = {
         visionWardsBoughtInGame: 2,
         wardsKilled: 3,
         wardsPlaced: 6,
-        win: false
+        win: false,
       },
       {
         allInPings: 0,
@@ -2876,7 +2708,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 6,
         challenges: {
-          "12AssistStreakCount": 0,
+          '12AssistStreakCount': 0,
           HealFromMapSources: 320,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -3001,12 +2833,12 @@ var match_default = {
           voidMonsterKill: 0,
           wardTakedowns: 3,
           wardTakedownsBefore20M: 1,
-          wardsGuarded: 1
+          wardsGuarded: 1,
         },
         champExperience: 10511,
         champLevel: 13,
         championId: 110,
-        championName: "Varus",
+        championName: 'Varus',
         championTransform: 0,
         commandPings: 8,
         consumablesPurchased: 3,
@@ -3032,7 +2864,7 @@ var match_default = {
         goldEarned: 10351,
         goldSpent: 10350,
         holdPings: 0,
-        individualPosition: "BOTTOM",
+        individualPosition: 'BOTTOM',
         inhibitorKills: 0,
         inhibitorTakedowns: 0,
         inhibitorsLost: 1,
@@ -3046,7 +2878,7 @@ var match_default = {
         itemsPurchased: 23,
         killingSprees: 1,
         kills: 6,
-        lane: "BOTTOM",
+        lane: 'BOTTOM',
         largestCriticalStrike: 0,
         largestKillingSpree: 3,
         largestMultiKill: 1,
@@ -3066,7 +2898,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 0,
         neutralMinionsKilled: 0,
@@ -3082,58 +2914,58 @@ var match_default = {
           statPerks: {
             defense: 5011,
             flex: 5008,
-            offense: 5005
+            offense: 5005,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 9923,
                   var1: 42,
                   var2: 93,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8139,
                   var1: 766,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8138,
                   var1: 9,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8106,
                   var1: 4,
                   var2: 26,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8100
+              style: 8100,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 8345,
                   var1: 3,
                   var2: 0,
-                  var3: 233
+                  var3: 233,
                 },
                 {
                   perk: 8347,
                   var1: 0,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8300
-            }
-          ]
+              style: 8300,
+            },
+          ],
         },
         physicalDamageDealt: 94090,
         physicalDamageDealtToChampions: 13826,
@@ -3148,12 +2980,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 6022,
         pushPings: 3,
-        puuid: "3V3tC03533UD1rLicO0gTOjnI1KeS0pIjfoBAbkYD01t3mCiYvegchCMkrwWL4a5ZduwMEpJ2GorsQ",
+        puuid: '3V3tC03533UD1rLicO0gTOjnI1KeS0pIjfoBAbkYD01t3mCiYvegchCMkrwWL4a5ZduwMEpJ2GorsQ',
         quadraKills: 0,
         retreatPings: 2,
-        riotIdGameName: "Ubres de Flakked",
-        riotIdTagline: "TET",
-        role: "CARRY",
+        riotIdGameName: 'Ubres de Flakked',
+        riotIdTagline: 'TET',
+        role: 'CARRY',
         sightWardsBoughtInGame: 0,
         spell1Casts: 58,
         spell2Casts: 19,
@@ -3164,12 +2996,12 @@ var match_default = {
         summoner1Id: 4,
         summoner2Casts: 3,
         summoner2Id: 21,
-        summonerId: "gRX-oTAFwqzECvrwZTZK94u_2jnVBfgkEIP0LjEu8A28YDs",
+        summonerId: 'gRX-oTAFwqzECvrwZTZK94u_2jnVBfgkEIP0LjEu8A28YDs',
         summonerLevel: 286,
-        summonerName: "MON Fournier",
+        summonerName: 'MON Fournier',
         teamEarlySurrendered: false,
         teamId: 200,
-        teamPosition: "BOTTOM",
+        teamPosition: 'BOTTOM',
         timeCCingOthers: 19,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 0,
@@ -3197,7 +3029,7 @@ var match_default = {
         visionWardsBoughtInGame: 2,
         wardsKilled: 3,
         wardsPlaced: 10,
-        win: false
+        win: false,
       },
       {
         allInPings: 0,
@@ -3207,7 +3039,7 @@ var match_default = {
         basicPings: 0,
         bountyLevel: 1,
         challenges: {
-          "12AssistStreakCount": 0,
+          '12AssistStreakCount': 0,
           HealFromMapSources: 0,
           InfernalScalePickup: 0,
           SWARM_DefeatAatrox: 0,
@@ -3334,12 +3166,12 @@ var match_default = {
           voidMonsterKill: 2,
           wardTakedowns: 10,
           wardTakedownsBefore20M: 9,
-          wardsGuarded: 0
+          wardsGuarded: 0,
         },
         champExperience: 8858,
         champLevel: 12,
         championId: 99,
-        championName: "Lux",
+        championName: 'Lux',
         championTransform: 0,
         commandPings: 4,
         consumablesPurchased: 7,
@@ -3365,7 +3197,7 @@ var match_default = {
         goldEarned: 7034,
         goldSpent: 6525,
         holdPings: 0,
-        individualPosition: "UTILITY",
+        individualPosition: 'UTILITY',
         inhibitorKills: 0,
         inhibitorTakedowns: 0,
         inhibitorsLost: 1,
@@ -3379,7 +3211,7 @@ var match_default = {
         itemsPurchased: 20,
         killingSprees: 0,
         kills: 1,
-        lane: "BOTTOM",
+        lane: 'BOTTOM',
         largestCriticalStrike: 0,
         largestKillingSpree: 0,
         largestMultiKill: 1,
@@ -3399,7 +3231,7 @@ var match_default = {
           playerScore8: 0,
           playerScore9: 0,
           playerScore10: 0,
-          playerScore11: 0
+          playerScore11: 0,
         },
         needVisionPings: 0,
         neutralMinionsKilled: 2,
@@ -3415,58 +3247,58 @@ var match_default = {
           statPerks: {
             defense: 5001,
             flex: 5008,
-            offense: 5008
+            offense: 5008,
           },
           styles: [
             {
-              description: "primaryStyle",
+              description: 'primaryStyle',
               selections: [
                 {
                   perk: 8128,
                   var1: 874,
                   var2: 14,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8126,
                   var1: 749,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8138,
                   var1: 30,
                   var2: 0,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8106,
                   var1: 5,
                   var2: 31,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8100
+              style: 8100,
             },
             {
-              description: "subStyle",
+              description: 'subStyle',
               selections: [
                 {
                   perk: 8226,
                   var1: 250,
                   var2: 444,
-                  var3: 0
+                  var3: 0,
                 },
                 {
                   perk: 8210,
                   var1: 9,
                   var2: 0,
-                  var3: 0
-                }
+                  var3: 0,
+                },
               ],
-              style: 8200
-            }
-          ]
+              style: 8200,
+            },
+          ],
         },
         physicalDamageDealt: 4132,
         physicalDamageDealtToChampions: 993,
@@ -3481,12 +3313,12 @@ var match_default = {
         playerSubteamId: 0,
         profileIcon: 4574,
         pushPings: 0,
-        puuid: "5rre7wUKajrakC0qxyssNDwKNj2Hbfp9MTmG9DSxfJQUF4hHu8UDPC9AXwt-sPeDUKlmxLvBOLwX7A",
+        puuid: '5rre7wUKajrakC0qxyssNDwKNj2Hbfp9MTmG9DSxfJQUF4hHu8UDPC9AXwt-sPeDUKlmxLvBOLwX7A',
         quadraKills: 0,
         retreatPings: 3,
-        riotIdGameName: "Nalg\xF3tica2000",
-        riotIdTagline: "EUW",
-        role: "SUPPORT",
+        riotIdGameName: 'Nalgótica2000',
+        riotIdTagline: 'EUW',
+        role: 'SUPPORT',
         sightWardsBoughtInGame: 0,
         spell1Casts: 41,
         spell2Casts: 29,
@@ -3497,12 +3329,12 @@ var match_default = {
         summoner1Id: 4,
         summoner2Casts: 3,
         summoner2Id: 3,
-        summonerId: "Xfi5l4xFX-fwnZSC6St4pzvEWChoyAwjAisADOtNu1Ttsdk",
+        summonerId: 'Xfi5l4xFX-fwnZSC6St4pzvEWChoyAwjAisADOtNu1Ttsdk',
         summonerLevel: 415,
-        summonerName: "Nalg\xF3tica2000",
+        summonerName: 'Nalgótica2000',
         teamEarlySurrendered: false,
         teamId: 200,
-        teamPosition: "UTILITY",
+        teamPosition: 'UTILITY',
         timeCCingOthers: 43,
         timePlayed: 1743,
         totalAllyJungleMinionsKilled: 0,
@@ -3530,322 +3362,125 @@ var match_default = {
         visionWardsBoughtInGame: 5,
         wardsKilled: 10,
         wardsPlaced: 34,
-        win: false
-      }
+        win: false,
+      },
     ],
-    platformId: "EUW1",
+    platformId: 'EUW1',
     queueId: 420,
     teams: [
       {
         bans: [
           {
             championId: 51,
-            pickTurn: 1
+            pickTurn: 1,
           },
           {
             championId: -1,
-            pickTurn: 2
+            pickTurn: 2,
           },
           {
             championId: 84,
-            pickTurn: 3
+            pickTurn: 3,
           },
           {
             championId: 893,
-            pickTurn: 4
+            pickTurn: 4,
           },
           {
             championId: 154,
-            pickTurn: 5
-          }
+            pickTurn: 5,
+          },
         ],
         objectives: {
           baron: {
             first: true,
-            kills: 1
+            kills: 1,
           },
           champion: {
             first: true,
-            kills: 23
+            kills: 23,
           },
           dragon: {
             first: false,
-            kills: 2
+            kills: 2,
           },
           horde: {
             first: false,
-            kills: 4
+            kills: 4,
           },
           inhibitor: {
             first: true,
-            kills: 1
+            kills: 1,
           },
           riftHerald: {
             first: true,
-            kills: 1
+            kills: 1,
           },
           tower: {
             first: true,
-            kills: 8
-          }
+            kills: 8,
+          },
         },
         teamId: 100,
-        win: true
+        win: true,
       },
       {
         bans: [
           {
             championId: 77,
-            pickTurn: 6
+            pickTurn: 6,
           },
           {
             championId: 56,
-            pickTurn: 7
+            pickTurn: 7,
           },
           {
             championId: 119,
-            pickTurn: 8
+            pickTurn: 8,
           },
           {
             championId: 107,
-            pickTurn: 9
+            pickTurn: 9,
           },
           {
             championId: 19,
-            pickTurn: 10
-          }
+            pickTurn: 10,
+          },
         ],
         objectives: {
           baron: {
             first: false,
-            kills: 0
+            kills: 0,
           },
           champion: {
             first: false,
-            kills: 13
+            kills: 13,
           },
           dragon: {
             first: true,
-            kills: 3
+            kills: 3,
           },
           horde: {
             first: true,
-            kills: 2
+            kills: 2,
           },
           inhibitor: {
             first: false,
-            kills: 0
+            kills: 0,
           },
           riftHerald: {
             first: false,
-            kills: 0
+            kills: 0,
           },
           tower: {
             first: false,
-            kills: 3
-          }
+            kills: 3,
+          },
         },
         teamId: 200,
-        win: false
-      }
+        win: false,
+      },
     ],
-    tournamentCode: ""
-  }
-};
-
-// package.json
-var package_default = {
-  name: "leagueofsummoner",
-  version: "2.1.20",
-  description: "The League of Summoner widget displays real-time data for a summoner, including: Rank,Tier,Wins,Losses,Total Matches,Win Percentage,Match History",
-  type: "module",
-  files: [
-    "dist"
-  ],
-  main: "./dist/widget.js",
-  scripts: {
-    build: "run-s build:**",
-    "build:remove": "rm -rf dist",
-    "build:widget": " npx esbuild src/widget.ts --bundle --outfile=dist/widget.js --platform=node",
-    "build:styles": "sass src/style.scss dist/style.css",
-    "build:doc": "node src/utils/generate_doc.js"
+    tournamentCode: '',
   },
-  repository: {
-    type: "git",
-    url: "git+https://github.com/vdomanskyi/leagueofsummoner.git"
-  },
-  publishConfig: {
-    registry: "https://registry.npmjs.org/"
-  },
-  author: "Valentyn Domanskyi",
-  license: "MIT",
-  bugs: {
-    url: "https://github.com/vdomanskyi/leagueofsummoner/issues"
-  },
-  homepage: "https://github.com/vdomanskyi/leagueofsummoner#readme",
-  devDependencies: {
-    "@types/axios": "^0.14.4",
-    "@types/jquery": "^3.5.32",
-    esbuild: "^0.24.2",
-    "fs-extra": "^11.2.0",
-    glob: "^11.0.0",
-    gsap: "^3.12.5",
-    "npm-run-all2": "^7.0.2",
-    sass: "^1.81.0",
-    typescript: "^5.7.2"
-  },
-  dependencies: {
-    tslib: "^2.8.1"
-  }
 };
-
-// src/frames/session.ts
-var storeName = `LoS_v${package_default.version}`;
-var createTitle = () => {
-  const _title = $("<p>").addClass("session-title__text").text("Session");
-  const _lp = $("<p>").addClass("session-title__score").addClass("loss").text(`${-4}LP`);
-  return $("<div>").addClass("session-title").append([_title, _lp]);
-};
-var createSessionStats = () => {
-  const _sessionStats = $("<div>").addClass("win-total-loss-stats");
-  const _wins = $("<p>").addClass("wins").text(`${18}W`);
-  const _losses = $("<p>").addClass("losses").text(`${1}L`);
-  const _total = $("<p>").addClass("total").text(`${18 + 1}`);
-  const _percent = $("<span>").text(`(${99}%)`);
-  _total.append(_percent);
-  _sessionStats.append([_wins, _total, _losses]);
-  return _sessionStats;
-};
-var createMatchList = (assets2, user) => {
-  const __list = $("<div>").addClass("session-matches");
-  const participant = getParticipant(user, match_default);
-  if (!participant) return __list;
-  const matches = [
-    createMatch(assets2, participant),
-    createMatch(assets2, participant),
-    createMatch(assets2, participant),
-    createMatch(assets2, participant),
-    createMatch(assets2, participant),
-    createMatch(assets2, participant)
-  ];
-  __list.append(matches);
-  return __list;
-};
-var session_default = async (assets2, { user }) => {
-  if (!user) return;
-  return [createTitle(), createMatchList(assets2, user), createSessionStats()];
-};
-
-// src/frames/error.ts
-var myDiscordUsername = "l1nk1337_";
-var disconSVGIcon = `
-  <svg class="discord-icon" viewBox="0 -28.5 256 256" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
-    <path d="M216.856339 16.5966031C200.285002 8.84328665 182.566144 3.2084988 164.041564 0c-2.275041 4.11318106-4.93294 9.64549908-6.765465 14.0464379-19.692104-2.9614483-39.203132-2.9614483-58.5330827 0C96.9108417 9.64549908 94.1925838 4.11318106 91.8971895 0 73.3526068 3.2084988 55.6133949 8.86399117 39.0420583 16.6376612 5.61752293 67.146514-3.4433191 116.400813 1.08711069 164.955721c22.16890891 16.555194 43.65325271 26.611976 64.77502181 33.192855 5.2150826-7.17745 9.8662303-14.807241 13.8730814-22.848315-7.6311949-2.899686-14.9402415-6.478059-21.8464273-10.632298 1.8321746-1.357374 3.6243438-2.776511 5.3558032-4.236706 42.1228202 19.70193 87.8903382 19.70193 129.5099332 0 1.751813 1.460195 3.543631 2.879332 5.355803 4.236706-6.926539 4.174593-14.255589 7.752966-21.886784 10.653002 4.006851 8.02037 8.637996 15.670866 13.873082 22.847965 21.142122-6.580879 42.646399-16.637311 64.815325-33.213209 5.315798-56.28752-9.080862-105.0894778-38.05561-148.3591179ZM85.4738752 135.09489c-12.6448471 0-23.0146535-11.804735-23.0146535-26.179989 0-14.3752538 10.1483733-26.2003423 23.0146535-26.2003423 12.8666312 0 23.2360868 11.804384 23.0146538 26.2003423.020002 14.375254-10.1480226 26.179989-23.0146538 26.179989Zm85.0513618 0c-12.644847 0-23.014653-11.804735-23.014653-26.179989 0-14.3752538 10.148022-26.2003423 23.014653-26.2003423 12.866281 0 23.236087 11.804384 23.014654 26.2003423 0 14.375254-10.148373 26.179989-23.014654 26.179989Z"/>
-  </svg>
-`;
-var error_default = (msg, showContactInfo) => {
-  const _content = [$("<div>").addClass("text").append($("<p>").text(msg))];
-  const _contanct = $("<div>").addClass("contact").append($(disconSVGIcon)).append($("<p>").text(myDiscordUsername));
-  if (showContactInfo) _content.push(_contanct);
-  return _content;
-};
-
-// src/widget.ts
-var border = {
-  topBottom: "data:image/png;base64,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",
-  leftRight: "data:image/png;base64,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"
-};
-var widget = $(".widget").addClass("loading");
-var hasDivisions = {
-  ["IRON" /* IRON */]: true,
-  ["BRONZE" /* BRONZE */]: true,
-  ["SILVER" /* SILVER */]: true,
-  ["GOLD" /* GOLD */]: true,
-  ["PLATINUM" /* PLATINUM */]: true,
-  ["EMERALD" /* EMERALD */]: true,
-  ["DIAMOND" /* DIAMOND */]: true,
-  ["MASTER" /* MASTER */]: false,
-  ["GRANDMASTER" /* GRANDMASTER */]: false,
-  ["CHALLENGER" /* CHALLENGER */]: false
-};
-var fields = null;
-var data = {
-  user: null,
-  character: null,
-  summoner: null,
-  matchIds: [],
-  matches: []
-};
-var getUserData = () => new Promise(async (resolve, reject) => {
-  if (!fields) return reject("No fields found");
-  try {
-    const userRes = await requests_default.general.getUser(fields);
-    if (userRes.data.puuid) data.user = userRes.data;
-    else return reject("No user found");
-    const summonerRes = await requests_default.general.getSummonerByPUUID(fields, data.user.puuid);
-    data.summoner = summonerRes.data;
-    if (!data.summoner) return reject("No summoner found");
-    const characterRes = await requests_default.general.getCharacterList(fields, data.summoner.id);
-    data.character = characterRes.data?.find((c) => c.queueType === "RANKED_SOLO_5x5") || null;
-    if (!data.character) return reject("No character found");
-    const matchListRes = await requests_default.match.getMatchList(fields, data.user.puuid);
-    data.matchIds = matchListRes.data;
-    resolve(void 0);
-  } catch (err) {
-    reject(err.response?.data || err);
-  }
-});
-var createBackground = () => {
-  if (!assets_default || !data.character) return;
-  const _banner = $("<img>").addClass("banner").attr("src", `${assets_default.bannerFolder}/${assets_default.banner[data.character.tier]}`);
-  return $("<div>").addClass("background").append(_banner).get(0);
-};
-var createBorder = () => {
-  const _borderTopBottom = $("<img>").addClass("border").attr("src", border.topBottom);
-  const _borderLeftRight = $("<img>").addClass("border").addClass("left-right").attr("src", border.leftRight);
-  return [_borderTopBottom, _borderLeftRight];
-};
-var createFrame = (className, node) => {
-  const _frame = $("<div>").addClass("frame").addClass(className);
-  const _content = $("<div>").addClass("content").append(node);
-  return _frame.append(_content);
-};
-var frames = async () => {
-  if (!assets_default || !data.character || !fields) return;
-  const _row = $("<div>").addClass("row");
-  const _frames = [];
-  await general_default(assets_default, data, hasDivisions[data.character.tier]).then((frame) => {
-    if (frame) _frames.push(createFrame("general", frame));
-  });
-  await matches_default(assets_default, data, fields).then((frame) => {
-    if (frame) _frames.push(createFrame("matches", frame));
-  });
-  await session_default(assets_default, data).then((frame) => {
-    if (frame) _frames.push(createFrame("session", frame));
-  });
-  if (_frames.length) _row.append([..._frames]);
-  $(".row").remove();
-  $(".background").remove();
-  return {
-    background: createBackground(),
-    row: _row.get(0),
-    countFrames: _row.children().length
-  };
-};
-var factory = async (firstRender) => {
-  if (!fields) return;
-  try {
-    await getUserData();
-    const F = await frames();
-    $(".animation").remove();
-    if (!F?.background || !F.row) return;
-    widget.append([F.background, $("<div>").addClass("animation").append(F.row)]);
-    if (firstRender) widget.removeClass("loading").append(createBorder());
-  } catch (err) {
-    widget.removeClass("loading").addClass("error").append(createFrame("issue", error_default(err ? JSON.stringify(err) : "Something went wrong", !err)));
-  }
-};
-addEventListener("onWidgetLoad", async (obj) => {
-  fields = obj.detail.fieldData;
-  factory(true);
-});

@@ -6,6 +6,7 @@ import requests from './requests';
 
 import general from './frames/general';
 import matches from './frames/matches';
+import session from './frames/session';
 import error from './frames/error';
 
 import { type Data, type Fields, type Detail, RANKED } from './interfaces/other.interface';
@@ -60,7 +61,7 @@ const getUserData = () =>
       if (!data.summoner) return reject('No summoner found');
 
       const characterRes = await requests.general.getCharacterList(fields, data.summoner.id);
-      data.character = characterRes.data.find((c) => c.queueType === 'RANKED_SOLO_5x5') || null;
+      data.character = characterRes.data?.find((c) => c.queueType === 'RANKED_SOLO_5x5') || null;
       if (!data.character) return reject('No character found');
 
       const matchListRes = await requests.match.getMatchList(fields, data.user.puuid);
@@ -68,7 +69,7 @@ const getUserData = () =>
 
       resolve(undefined);
     } catch (err: any) {
-      reject(err.response?.data || err.message || 'Unknown error');
+      reject(err.response?.data || err);
     }
   });
 
@@ -141,7 +142,12 @@ const frames = async () => {
     if (frame) _frames.push(createFrame('matches', frame));
   });
 
-  if (_frames.length) _row.append([..._frames, $(_frames[0]).clone(true)]);
+  await session(assets, data).then((frame) => {
+    if (frame) _frames.push(createFrame('session', frame));
+  });
+
+  // if (_frames.length) _row.append([..._frames, $(_frames[0]).clone(true)]);
+  if (_frames.length) _row.append([..._frames]);
 
   $('.row').remove();
   $('.background').remove();
@@ -167,9 +173,9 @@ const factory = async (firstRender?: boolean) => {
 
     widget.append([F.background, $('<div>').addClass('animation').append(F.row)]);
 
-    animate();
+    // animate();
 
-    setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
+    // setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
 
     if (firstRender) widget.removeClass('loading').append(createBorder());
   } catch (err: any) {

@@ -78,3 +78,17 @@ export interface Summoner {
   revisionDate: number;
   summonerLevel: number;
 }
+
+export interface StreamelementsAPI {
+  store: {
+    set: (storageName: string, data: object) => void;
+    get: (storageName: string) => Promise<object>;
+  };
+  counters: {
+    get: (counterName: string) => Promise<object>;
+  };
+  sanitize: (data: any) => Promise<{ result: string; skip: boolean }>;
+  getOverlayStatus: () => { isEditorMode: boolean; muted: boolean };
+}
+
+export interface SessionStoreData {}

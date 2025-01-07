@@ -56,3 +56,76 @@
 
 //   return $('<div>').addClass('champions').append([_title.get(0), _champions.get(0)]);
 // };
+
+import match from '../match';
+import pkg from '../../package.json';
+
+import { createMatch, getParticipant } from './matches';
+
+import { Assets, Data, SessionStoreData, User } from '../interfaces/other.interface';
+
+const storeName = `LoS_v${pkg.version}`;
+
+const store = {
+  set: (data: SessionStoreData) => sessionStorage.setItem(storeName, JSON.stringify(data)),
+  get: (): SessionStoreData | null => {
+    const value = sessionStorage.getItem(storeName);
+
+    return typeof value === 'object' && value !== null ? JSON.parse(value) : null;
+  },
+};
+
+const createTitle = () => {
+  const _title = $('<p>').addClass('session-title__text').text('Session');
+  const _lp = $('<p>').addClass('session-title__score').addClass('loss').text(`${-4}LP`);
+
+  return $('<div>').addClass('session-title').append([_title, _lp]);
+};
+
+const createSessionStats = () => {
+  const _sessionStats = $('<div>').addClass('win-total-loss-stats');
+
+  const _wins = $('<p>').addClass('wins').text(`${18}W`);
+  const _losses = $('<p>').addClass('losses').text(`${1}L`);
+  const _total = $('<p>')
+    .addClass('total')
+    .text(`${18 + 1}`);
+
+  // if (character.wins > 0) {
+  // const value = ((character.wins / (character.wins + character.losses)) * 100).toFixed(0);
+  const _percent = $('<span>').text(`(${99}%)`);
+
+  _total.append(_percent);
+  // }
+
+  _sessionStats.append([_wins, _total, _losses]);
+
+  return _sessionStats;
+};
+
+const createMatchList = (assets: Assets, user: User) => {
+  const __list = $('<div>').addClass('session-matches');
+
+  const participant = getParticipant(user, match);
+
+  if (!participant) return __list;
+
+  const matches = [
+    createMatch(assets, participant),
+    createMatch(assets, participant),
+    createMatch(assets, participant),
+    createMatch(assets, participant),
+    createMatch(assets, participant),
+    createMatch(assets, participant),
+  ];
+
+  __list.append(matches);
+
+  return __list;
+};
+
+export default async (assets: Assets, { user }: Data) => {
+  if (!user) return;
+
+  return [createTitle(), createMatchList(assets, user), createSessionStats()];
+};

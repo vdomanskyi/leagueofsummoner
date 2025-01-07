@@ -24,4 +24,6 @@ fsx.writeFileSync(
 );
 
 fsx.copyFileSync(__oldAssets, path.resolve(__dist, path.parse(__oldAssets).base));
+
+// For <=1.0.6 versions
 fsx.copyFileSync(__obtainAPIKey, path.resolve(__dist, 'documentation', path.parse(__obtainAPIKey).base));

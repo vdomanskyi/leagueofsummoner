@@ -3,10 +3,10 @@ import { Assets, Data, Fields, User } from '../interfaces/other.interface';
 
 import requests from '../requests';
 
-const getParticipant = (user: User, match: Match) =>
+export const getParticipant = (user: User, match: Match) =>
   match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
 
-const createMatch = (assets: Assets, participant: Participant) => {
+export const createMatch = (assets: Assets, participant: Participant) => {
   const countPings = (Object.keys(participant) as (keyof Participant)[])
     .filter((k) => k.toLowerCase().includes('pings'))
     .reduce((sum, key) => sum + Number(participant[key]), 0);
