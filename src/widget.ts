@@ -6,10 +6,9 @@ import requests from './requests';
 
 import general from './frames/general';
 import matches from './frames/matches';
+import error from './frames/error';
 
 import { type Data, type Fields, type Detail, RANKED } from './interfaces/other.interface';
-
-const __LoS__ = '[League of Summoner]';
 
 const border = {
   topBottom:
@@ -44,37 +43,37 @@ let data: Data = {
 };
 
 /**
- * GET ASSETS AND USER DATA
+ * GET USER DATA, CHARACTER, SUMMONER, MATCHES.
  */
 
-const getUserData = async (a: any) => {
-  if (!fields) return console.error(__LoS__, 'No fields found');
+const getUserData = () =>
+  new Promise(async (resolve, reject) => {
+    if (!fields) return reject('No fields found');
 
-  await requests.general.getUser(fields).then((res) => {
-    if (res.data.puuid) data.user = res.data;
+    try {
+      const userRes = await requests.general.getUser(fields);
+      if (userRes.data.puuid) data.user = userRes.data;
+      else return reject('No user found');
+
+      const summonerRes = await requests.general.getSummonerByPUUID(fields, data.user.puuid);
+      data.summoner = summonerRes.data;
+      if (!data.summoner) return reject('No summoner found');
+
+      const characterRes = await requests.general.getCharacterList(fields, data.summoner.id);
+      data.character = characterRes.data.find((c) => c.queueType === 'RANKED_SOLO_5x5') || null;
+      if (!data.character) return reject('No character found');
+
+      const matchListRes = await requests.match.getMatchList(fields, data.user.puuid);
+      data.matchIds = matchListRes.data;
+
+      resolve(undefined);
+    } catch (err: any) {
+      reject(err.response?.data || err.message || 'Unknown error');
+    }
   });
-
-  if (data.user === null) return console.error(__LoS__, 'No user found');
-
-  await requests.general.getSummonerByPUUID(fields, data.user.puuid).then((res) => {
-    data.summoner = res.data;
-  });
-
-  if (data.summoner === null) return console.error(__LoS__, 'No summoner found');
-
-  await requests.general.getCharacterList(fields, data.summoner.id).then((res) => {
-    data.character = res.data.find((c) => c.queueType === 'RANKED_SOLO_5x5') || null;
-  });
-
-  if (data.character === null) return console.error(__LoS__, 'No character found');
-
-  await requests.match.getMatchList(fields, data.user.puuid).then((res) => {
-    data.matchIds = res.data;
-  });
-};
 
 /**
- * UI ELEMENTS
+ * UI ELEMENTS AND ANIMATION.
  */
 
 const createBackground = () => {
@@ -155,39 +154,38 @@ const frames = async () => {
 };
 
 const factory = async (firstRender?: boolean) => {
-  await getUserData(firstRender);
+  if (!fields) return;
 
-  const F = await frames();
+  try {
+    await getUserData();
 
-  $('.animation').remove();
+    const F = await frames();
 
-  if (!F?.background || !F.row) return;
+    $('.animation').remove();
 
-  widget.append([F.background, $('<div>').addClass('animation').append(F.row)]);
+    if (!F?.background || !F.row) return;
 
-  animate();
+    widget.append([F.background, $('<div>').addClass('animation').append(F.row)]);
 
-  if (firstRender) widget.removeClass('loading').append(createBorder());
+    animate();
+
+    setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
+
+    if (firstRender) widget.removeClass('loading').append(createBorder());
+  } catch (err: any) {
+    widget
+      .removeClass('loading')
+      .addClass('error')
+      .append(createFrame('issue', error(err ? JSON.stringify(err) : 'Something went wrong', !err)));
+  }
 };
 
 /**
  * INITIALIZE
  */
 
-const interval = () => {
-  const countFrames = $('.row').children().length;
-
-  console.log('interval');
-
-  if (fields) setInterval(factory, (countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
-};
-
 addEventListener('onWidgetLoad', async (obj) => {
-  const { detail } = obj as unknown as Detail;
+  fields = (obj as unknown as Detail).detail.fieldData;
 
-  fields = detail.fieldData;
-
-  await factory(true);
-
-  // interval();
+  factory(true);
 });
