@@ -64,8 +64,8 @@ const getUserData = () =>
       data.character = characterRes.data?.find((c) => c.queueType === 'RANKED_SOLO_5x5') || null;
       if (!data.character) return reject('No character found');
 
-      const matchListRes = await requests.match.getMatchList(fields, data.user.puuid);
-      data.matchIds = matchListRes.data;
+      // const matchListRes = await requests.match.getMatchList(fields, data.user.puuid);
+      // data.matchIds = matchListRes.data;
 
       resolve(undefined);
     } catch (err: any) {
@@ -128,7 +128,7 @@ const createFrame = (className: string, node: JQuery<HTMLElement>[]) => {
   return _frame.append(_content);
 };
 
-const frames = async () => {
+const frames = async (firstRender?: boolean) => {
   if (!assets || !data.character || !fields) return;
 
   const _row = $('<div>').addClass('row');
@@ -142,7 +142,7 @@ const frames = async () => {
   //   if (frame) _frames.push(createFrame('matches', frame));
   // });
 
-  await session(assets, data).then((frame) => {
+  await session(assets, data, firstRender).then((frame) => {
     if (frame) _frames.push(createFrame('session', frame));
   });
 
@@ -165,7 +165,7 @@ const factory = async (firstRender?: boolean) => {
   try {
     await getUserData();
 
-    const F = await frames();
+    const F = await frames(firstRender);
 
     $('.animation').remove();
 
@@ -173,7 +173,7 @@ const factory = async (firstRender?: boolean) => {
 
     widget.append([F.background, $('<div>').addClass('animation').append(F.row)]);
 
-    // animate();
+    animate();
 
     // setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
 

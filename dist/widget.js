@@ -3562,52 +3562,6 @@ var match_default = {
   }
 };
 
-// package.json
-var package_default = {
-  name: "leagueofsummoner",
-  version: "2.1.20",
-  description: "The League of Summoner widget displays real-time data for a summoner, including: Rank,Tier,Wins,Losses,Total Matches,Win Percentage,Match History",
-  type: "module",
-  files: [
-    "dist"
-  ],
-  main: "./dist/widget.js",
-  scripts: {
-    build: "run-s build:**",
-    "build:remove": "rm -rf dist",
-    "build:widget": " npx esbuild src/widget.ts --bundle --outfile=dist/widget.js --platform=node",
-    "build:styles": "sass src/styles/index.scss dist/style.css",
-    "build:doc": "node src/utils/generate_doc.js"
-  },
-  repository: {
-    type: "git",
-    url: "git+https://github.com/vdomanskyi/leagueofsummoner.git"
-  },
-  publishConfig: {
-    registry: "https://registry.npmjs.org/"
-  },
-  author: "Valentyn Domanskyi",
-  license: "MIT",
-  bugs: {
-    url: "https://github.com/vdomanskyi/leagueofsummoner/issues"
-  },
-  homepage: "https://github.com/vdomanskyi/leagueofsummoner#readme",
-  devDependencies: {
-    "@types/axios": "^0.14.4",
-    "@types/jquery": "^3.5.32",
-    esbuild: "^0.24.2",
-    "fs-extra": "^11.2.0",
-    glob: "^11.0.0",
-    gsap: "^3.12.5",
-    "npm-run-all2": "^7.0.2",
-    sass: "^1.81.0",
-    typescript: "^5.7.2"
-  },
-  dependencies: {
-    tslib: "^2.8.1"
-  }
-};
-
 // src/frames/matches.ts
 var getParticipant = (user, match) => match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
 var createMatch = (assets2, participant) => {
@@ -3629,19 +3583,60 @@ var createMatch = (assets2, participant) => {
 };
 
 // src/frames/session.ts
-var storeName = `LoS_v${package_default.version}`;
+var storeName = `LoS_v1.0.0`;
+var store = {
+  set: (data2) => sessionStorage.setItem(storeName, JSON.stringify(data2)),
+  get: () => {
+    const value = sessionStorage.getItem(storeName);
+    return !value ? null : JSON.parse(value);
+  },
+  setField: (key, value) => {
+    const data2 = store.get();
+    if (!data2) return new Error("No data found");
+    data2[key] = value;
+    store.set(data2);
+  },
+  setup: (character) => store.set({
+    startLP: character.leaguePoints,
+    currentLP: character.leaguePoints,
+    matches: {}
+  })
+};
 var createTitle = () => {
   const _title = $("<p>").addClass("session-title__text").text("Session");
-  const _lp = $("<p>").addClass("session-title__score").addClass("loss").text(`${-4}LP`);
+  const _lp = $("<p>").addClass("session-title__score");
+  const storeData = store.get();
+  if (!storeData) _lp.text("No data");
+  else {
+    const score = (storeData.startLP - (storeData.currentLP || storeData.startLP)) * -1;
+    _lp.text(`${score > 0 ? "+" : ""}${score}LP`);
+    if (score > 0) _lp.addClass("win");
+    else if (score < 0) _lp.addClass("loss");
+    else _lp.removeClass("win").removeClass("loss");
+  }
   return $("<div>").addClass("session-title").append([_title, _lp]);
 };
-var createSessionStats = () => {
+var createWinTotalLossStats = () => {
   const _sessionStats = $("<div>").addClass("win-total-loss-stats");
-  const _wins = $("<p>").addClass("wins").text(`${18}W`);
-  const _losses = $("<p>").addClass("losses").text(`${1}L`);
-  const _total = $("<p>").addClass("total").text(`${18 + 1}`);
-  const _percent = $("<span>").text(`(${99}%)`);
-  _total.append(_percent);
+  const _wins = $("<p>").addClass("wins");
+  const _losses = $("<p>").addClass("losses");
+  const _total = $("<p>").addClass("total");
+  const data2 = store.get();
+  if (!data2) {
+    _wins.text("0W");
+    _losses.text("0L");
+    _total.text("0(0%)");
+  } else {
+    let wins = 0;
+    let losses = 0;
+    let percent = 0;
+    Object.values(data2.matches).forEach(({ win }) => win ? wins++ : losses++);
+    percent = Number((wins / (wins + losses) * 100).toFixed(0));
+    _wins.text(`${wins}W`);
+    _losses.text(`${losses}L`);
+    _total.text(`${wins + losses}`);
+    if (percent > 0) _total.append($("<span>").text(`(${percent}%)`));
+  }
   _sessionStats.append([_wins, _total, _losses]);
   return _sessionStats;
 };
@@ -3651,18 +3646,19 @@ var createMatchList = (assets2, user) => {
   if (!participant) return __list;
   const matches = [
     createMatch(assets2, participant),
+    createMatch(assets2, { ...participant, win: false }),
     createMatch(assets2, participant),
-    createMatch(assets2, participant),
-    createMatch(assets2, participant),
-    createMatch(assets2, participant),
+    createMatch(assets2, { ...participant, win: false }),
+    createMatch(assets2, { ...participant, win: false }),
     createMatch(assets2, participant)
   ];
   __list.append(matches);
   return __list;
 };
-var session_default = async (assets2, { user }) => {
-  if (!user) return;
-  return [createTitle(), createMatchList(assets2, user), createSessionStats()];
+var session_default = async (assets2, { user, character }, firstRender) => {
+  if (!user || !character) return;
+  if (firstRender) store.setup(character);
+  return [createTitle(), createMatchList(assets2, user), createWinTotalLossStats()];
 };
 
 // src/frames/error.ts
@@ -3717,8 +3713,6 @@ var getUserData = () => new Promise(async (resolve, reject) => {
     const characterRes = await requests_default.general.getCharacterList(fields, data.summoner.id);
     data.character = characterRes.data?.find((c) => c.queueType === "RANKED_SOLO_5x5") || null;
     if (!data.character) return reject("No character found");
-    const matchListRes = await requests_default.match.getMatchList(fields, data.user.puuid);
-    data.matchIds = matchListRes.data;
     resolve(void 0);
   } catch (err) {
     reject(err.response?.data || err);
@@ -3734,16 +3728,33 @@ var createBorder = () => {
   const _borderLeftRight = $("<img>").addClass("border").addClass("left-right").attr("src", border.leftRight);
   return [_borderTopBottom, _borderLeftRight];
 };
+var animate = () => {
+  if (!fields) return;
+  const row = $(".row");
+  const width = row.width();
+  const countFrames = row.children().length;
+  const frameWidth = width / countFrames;
+  const timeline = gsap.timeline({
+    repeat: -1,
+    repeatDelay: 0,
+    defaults: { ease: Power1.easeInOut, duration: fields.transitionDuration }
+  });
+  for (let i = 0; i < countFrames; i++) {
+    const gap = frameWidth * i * -1;
+    const time = i === 1 ? "<" : `>+${fields.pauseDuration}`;
+    timeline.to(".animation", { x: gap }, time);
+  }
+};
 var createFrame = (className, node) => {
   const _frame = $("<div>").addClass("frame").addClass(className);
   const _content = $("<div>").addClass("content").append(node);
   return _frame.append(_content);
 };
-var frames = async () => {
+var frames = async (firstRender) => {
   if (!assets_default || !data.character || !fields) return;
   const _row = $("<div>").addClass("row");
   const _frames = [];
-  await session_default(assets_default, data).then((frame) => {
+  await session_default(assets_default, data, firstRender).then((frame) => {
     if (frame) _frames.push(createFrame("session", frame));
   });
   if (_frames.length) _row.append([..._frames]);
@@ -3759,10 +3770,11 @@ var factory = async (firstRender) => {
   if (!fields) return;
   try {
     await getUserData();
-    const F = await frames();
+    const F = await frames(firstRender);
     $(".animation").remove();
     if (!F?.background || !F.row) return;
     widget.append([F.background, $("<div>").addClass("animation").append(F.row)]);
+    animate();
     if (firstRender) widget.removeClass("loading").append(createBorder());
   } catch (err) {
     widget.removeClass("loading").addClass("error").append(createFrame("issue", error_default(err ? JSON.stringify(err) : "Something went wrong", !err)));

@@ -91,4 +91,8 @@ export interface StreamelementsAPI {
   getOverlayStatus: () => { isEditorMode: boolean; muted: boolean };
 }
 
-export interface SessionStoreData {}
+export interface SessionStoreData {
+  startLP: number;
+  currentLP: number;
+  matches: Record<string, { win: boolean }>;
+}

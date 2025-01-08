@@ -119,7 +119,7 @@
 }
 .frame.matches .content .last-match .title {
   font-size: 14px;
-  line-height: 13px;
+  line-height: 14px;
   color: var(--white);
 }
 .frame.matches .content .last-match .title .last {
@@ -145,6 +145,29 @@
   flex-direction: column;
   justify-content: space-between;
 }
+.frame.session .content .session-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+.frame.session .content .session-title__text {
+  color: var(--white);
+}
+.frame.session .content .session-title__score {
+  color: var(--white);
+}
+.frame.session .content .session-title__score.loss {
+  color: var(--red600);
+}
+.frame.session .content .session-title__score.win {
+  color: var(--green);
+}
+.frame.session .content .session-matches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 8px;
+}
 
 @font-face {
   font-family: BeaufortForLOL;
@@ -161,6 +184,7 @@
 :root {
   --white: #f0e6d2;
   --yellow: #c89b3c;
+  --yellow100: #f7be0b;
   --gold500: #785a28;
   --gold700: #32281e;
   --blue500: #5383e8;
@@ -390,7 +414,7 @@ p {
 }
 .match__stats .pings p {
   text-align: center;
-  color: var(--yellow);
+  color: var(--yellow100);
 }
 
 /*# sourceMappingURL=style.css.map */

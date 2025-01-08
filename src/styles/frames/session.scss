@@ -5,5 +5,35 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
+    .session-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 4px;
+
+      &__text {
+        color: var(--white);
+      }
+
+      &__score {
+        color: var(--white);
+
+        &.loss {
+          color: var(--red600);
+        }
+
+        &.win {
+          color: var(--green);
+        }
+      }
+    }
+
+    .session-matches {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px 8px;
+    }
   }
 }

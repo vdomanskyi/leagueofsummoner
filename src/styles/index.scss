@@ -22,6 +22,7 @@
 :root {
   --white: #f0e6d2;
   --yellow: #c89b3c;
+  --yellow100: #f7be0b;
   --gold500: #785a28;
   --gold700: #32281e;
   --blue500: #5383e8;
@@ -275,7 +276,7 @@ p {
 
       p {
         text-align: center;
-        color: var(--yellow);
+        color: var(--yellow100);
       }
     }
   }

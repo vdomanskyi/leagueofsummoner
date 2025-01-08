@@ -29,18 +29,15 @@ const createCharacter = (character: Character, user: User) => {
 const createCharacterStats = (character: Character) => {
   const _characterStats = $('<div>').addClass('win-total-loss-stats');
 
-  const _wins = $('<p>').addClass('wins').text(`${character.wins}W`);
-  const _losses = $('<p>').addClass('losses').text(`${character.losses}L`);
-  const _total = $('<p>')
-    .addClass('total')
-    .text(`${character.wins + character.losses}`);
+  const wins = character.wins || 0;
+  const losses = character.losses || 0;
+  const percent = ((wins / (wins + losses)) * 100).toFixed(0);
 
-  if (character.wins > 0) {
-    const value = ((character.wins / (character.wins + character.losses)) * 100).toFixed(0);
-    const _percent = $('<span>').text(`(${value}%)`);
+  const _wins = $('<p>').addClass('wins').text(`${wins}W`);
+  const _losses = $('<p>').addClass('losses').text(`${losses}L`);
+  const _total = $('<p>').addClass('total');
 
-    _total.append(_percent);
-  }
+  _total.text(`${wins + losses}`).append($('<span>').text(`(${percent}%)`));
 
   _characterStats.append([_wins, _total, _losses]);
 
