@@ -47,7 +47,8 @@ const createCharacterStats = (character: Character) => {
 export default async (
   assets: Assets,
   { summoner, user, character }: Data,
-  hasDivisions: boolean
+  hasDivisions: boolean,
+  firstRender?: boolean
 ): Promise<JQuery<HTMLElement>[] | undefined> => {
   if (!user || !character || !summoner) return;
 

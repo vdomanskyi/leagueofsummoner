@@ -51,7 +51,7 @@ const createLastMatch = (assets: Assets, matchId: string, participant: Participa
   return _lastMatch;
 };
 
-export default async (assets: Assets, { user, matchIds }: Data, fields: Fields) => {
+export default async (assets: Assets, { user, matchIds }: Data, fields: Fields, firstRender?: boolean) => {
   if (!user) return;
 
   const matches: Match[] = [];

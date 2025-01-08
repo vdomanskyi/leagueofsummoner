@@ -26,19 +26,19 @@ const store = {
     store.set({
       startLP: character.leaguePoints,
       currentLP: character.leaguePoints,
-      matches: {},
+      firstRenderMatches: [],
     }),
 };
 
-export const addMatchToStore = (matchId: string, win: boolean) => {
-  const data = store.get();
+// export const addMatchToStore = (matchId: string, win: boolean) => {
+//   const data = store.get();
 
-  if (!data) return new Error('No data found');
+//   if (!data) return new Error('No data found');
 
-  data.matches[matchId] = { win };
+//   data.matches[matchId] = { win };
 
-  store.set(data);
-};
+//   store.set(data);
+// };
 
 /**
  * Frame elements
@@ -77,7 +77,7 @@ const createWinTotalLossStats = () => {
   let losses = 0;
   let percent = 0;
 
-  Object.values(data?.matches || {}).forEach(({ win }) => (win ? wins++ : losses++));
+  // Object.values(data?.firstRenderMatches || {}).forEach(({ win }) => (win ? wins++ : losses++));
   percent = wins > 0 ? Number(((wins / (wins + losses)) * 100).toFixed(0)) : 0;
 
   _wins.text(`${wins}W`);
@@ -110,6 +110,7 @@ export default async (assets: Assets, { user, character }: Data, firstRender?: b
   if (!user || !character) return;
 
   if (firstRender) store.setup(character);
+  else store.setField('currentLP', character.leaguePoints);
 
   return [createTitle(), createMatchList(assets, user), createWinTotalLossStats()];
 };

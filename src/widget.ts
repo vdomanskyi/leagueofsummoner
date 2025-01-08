@@ -134,11 +134,11 @@ const frames = async (firstRender?: boolean) => {
   const _row = $('<div>').addClass('row');
   const _frames: JQuery<HTMLElement>[] = [];
 
-  // await general(assets, data, hasDivisions[data.character.tier]).then((frame) => {
+  // await general(assets, data, hasDivisions[data.character.tier], firstRender).then((frame) => {
   //   if (frame) _frames.push(createFrame('general', frame));
   // });
 
-  await matches(assets, data, fields).then((frame) => {
+  await matches(assets, data, fields, firstRender).then((frame) => {
     if (frame) _frames.push(createFrame('matches', frame));
   });
 
