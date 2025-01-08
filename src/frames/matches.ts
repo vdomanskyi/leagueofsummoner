@@ -6,12 +6,12 @@ import requests from '../requests';
 export const getParticipant = (user: User, match: Match) =>
   match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
 
-export const createMatch = (assets: Assets, participant: Participant) => {
+export const createMatch = (assets: Assets, matchId: string, participant: Participant) => {
   const countPings = (Object.keys(participant) as (keyof Participant)[])
     .filter((k) => k.toLowerCase().includes('pings'))
     .reduce((sum, key) => sum + Number(participant[key]), 0);
 
-  const _match = $('<div>').addClass('match');
+  const _match = $('<div>').attr('id', matchId).addClass('match');
 
   const _champion = $('<div>').addClass('champion');
   const _matchStats = $('<div>').addClass('match__stats');
@@ -34,7 +34,7 @@ export const createMatch = (assets: Assets, participant: Participant) => {
   return _match;
 };
 
-const createLastMatch = (assets: Assets, participant: Participant) => {
+const createLastMatch = (assets: Assets, matchId: string, participant: Participant) => {
   $('.last-match').remove();
 
   const _lastMatch = $('<div>').addClass('last-match');
@@ -46,7 +46,7 @@ const createLastMatch = (assets: Assets, participant: Participant) => {
 
   _title.append([_last, _match]);
 
-  _lastMatch.append(_title, createMatch(assets, participant));
+  _lastMatch.append(_title, createMatch(assets, matchId, participant));
 
   return _lastMatch;
 };
@@ -77,8 +77,8 @@ export default async (assets: Assets, { user, matchIds }: Data, fields: Fields) 
     if (!participant) return;
 
     index
-      ? _previousMatches.push(createMatch(assets, participant))
-      : (_lastMatch = createLastMatch(assets, participant));
+      ? _previousMatches.push(createMatch(assets, match.metadata.matchId, participant))
+      : (_lastMatch = createLastMatch(assets, match.metadata.matchId, participant));
   });
 
   if (_lastMatch) _list.push(_lastMatch);

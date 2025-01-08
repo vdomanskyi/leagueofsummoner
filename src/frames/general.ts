@@ -31,7 +31,7 @@ const createCharacterStats = (character: Character) => {
 
   const wins = character.wins || 0;
   const losses = character.losses || 0;
-  const percent = ((wins / (wins + losses)) * 100).toFixed(0);
+  const percent = wins > 0 ? ((wins / (wins + losses)) * 100).toFixed(0) : 0;
 
   const _wins = $('<p>').addClass('wins').text(`${wins}W`);
   const _losses = $('<p>').addClass('losses').text(`${losses}L`);

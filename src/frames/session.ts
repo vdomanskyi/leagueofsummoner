@@ -78,7 +78,7 @@ const createWinTotalLossStats = () => {
   let percent = 0;
 
   Object.values(data?.matches || {}).forEach(({ win }) => (win ? wins++ : losses++));
-  percent = Number(((wins / (wins + losses)) * 100).toFixed(0));
+  percent = wins > 0 ? Number(((wins / (wins + losses)) * 100).toFixed(0)) : 0;
 
   _wins.text(`${wins}W`);
   _losses.text(`${losses}L`);
@@ -98,16 +98,10 @@ const createMatchList = (assets: Assets, user: User) => {
 
   if (!participant) return __list;
 
-  const matches = [
-    createMatch(assets, participant),
-    createMatch(assets, { ...participant, win: false }),
-    createMatch(assets, participant),
-    createMatch(assets, { ...participant, win: false }),
-    createMatch(assets, { ...participant, win: false }),
-    createMatch(assets, participant),
-  ];
+  const matches: JQuery<HTMLElement>[] = [];
 
-  __list.append(matches);
+  if (!matches.length) __list.append($('<p>').addClass('session-matches__no-data').text('No matches'));
+  else __list.append(matches);
 
   return __list;
 };

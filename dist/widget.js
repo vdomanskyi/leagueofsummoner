@@ -74,6 +74,59 @@ var requests_default = {
   // },
 };
 
+// src/frames/matches.ts
+var getParticipant = (user, match) => match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
+var createMatch = (assets2, matchId, participant) => {
+  const countPings = Object.keys(participant).filter((k) => k.toLowerCase().includes("pings")).reduce((sum, key) => sum + Number(participant[key]), 0);
+  const _match = $("<div>").attr("id", matchId).addClass("match");
+  const _champion = $("<div>").addClass("champion");
+  const _matchStats = $("<div>").addClass("match__stats");
+  const _stats = $("<p>").addClass("stats");
+  const _bait = $("<img>").addClass("bait").attr("src", assets2.baitPing);
+  const _count = $("<p>").text(`${countPings}`);
+  const _pings = $("<div>").addClass("pings");
+  _stats.text(`${participant.kills}/${participant.deaths}/${participant.assists}`);
+  _pings.append([_bait, _count]);
+  _champion.append($("<img>").attr("src", `${assets2.championIcons}/${participant.championId}.png`));
+  _matchStats.append([_stats, _pings]);
+  _match.append([_champion, _matchStats]);
+  if (participant.win) _match.addClass("win");
+  return _match;
+};
+var createLastMatch = (assets2, matchId, participant) => {
+  $(".last-match").remove();
+  const _lastMatch = $("<div>").addClass("last-match");
+  const _title = $("<p>").addClass("title");
+  const _last = $("<span>").addClass("last").text("Last");
+  const _match = $("<span>").addClass("match").text("match:");
+  _title.append([_last, _match]);
+  _lastMatch.append(_title, createMatch(assets2, matchId, participant));
+  return _lastMatch;
+};
+var matches_default = async (assets2, { user, matchIds }, fields2) => {
+  if (!user) return;
+  const matches = [];
+  const _list = [];
+  const _previousMatches = [];
+  let _lastMatch = null;
+  await Promise.all(
+    matchIds.map(
+      (id) => requests_default.match.getMatchById(fields2, id).then((res) => {
+        matches.push(res.data);
+      })
+    )
+  );
+  matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+  matches.forEach((match, index) => {
+    const participant = getParticipant(user, match);
+    if (!participant) return;
+    index ? _previousMatches.push(createMatch(assets2, match.metadata.matchId, participant)) : _lastMatch = createLastMatch(assets2, match.metadata.matchId, participant);
+  });
+  if (_lastMatch) _list.push(_lastMatch);
+  _list.push($("<div>").addClass("matches").append(_previousMatches));
+  return _list;
+};
+
 // src/match.ts
 var match_default = {
   metadata: {
@@ -3562,26 +3615,6 @@ var match_default = {
   }
 };
 
-// src/frames/matches.ts
-var getParticipant = (user, match) => match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
-var createMatch = (assets2, participant) => {
-  const countPings = Object.keys(participant).filter((k) => k.toLowerCase().includes("pings")).reduce((sum, key) => sum + Number(participant[key]), 0);
-  const _match = $("<div>").addClass("match");
-  const _champion = $("<div>").addClass("champion");
-  const _matchStats = $("<div>").addClass("match__stats");
-  const _stats = $("<p>").addClass("stats");
-  const _bait = $("<img>").addClass("bait").attr("src", assets2.baitPing);
-  const _count = $("<p>").text(`${countPings}`);
-  const _pings = $("<div>").addClass("pings");
-  _stats.text(`${participant.kills}/${participant.deaths}/${participant.assists}`);
-  _pings.append([_bait, _count]);
-  _champion.append($("<img>").attr("src", `${assets2.championIcons}/${participant.championId}.png`));
-  _matchStats.append([_stats, _pings]);
-  _match.append([_champion, _matchStats]);
-  if (participant.win) _match.addClass("win");
-  return _match;
-};
-
 // src/frames/session.ts
 var storeName = `LoS_v1.0.0`;
 var store = {
@@ -3622,21 +3655,15 @@ var createWinTotalLossStats = () => {
   const _losses = $("<p>").addClass("losses");
   const _total = $("<p>").addClass("total");
   const data2 = store.get();
-  if (!data2) {
-    _wins.text("0W");
-    _losses.text("0L");
-    _total.text("0(0%)");
-  } else {
-    let wins = 0;
-    let losses = 0;
-    let percent = 0;
-    Object.values(data2.matches).forEach(({ win }) => win ? wins++ : losses++);
-    percent = Number((wins / (wins + losses) * 100).toFixed(0));
-    _wins.text(`${wins}W`);
-    _losses.text(`${losses}L`);
-    _total.text(`${wins + losses}`);
-    if (percent > 0) _total.append($("<span>").text(`(${percent}%)`));
-  }
+  let wins = 0;
+  let losses = 0;
+  let percent = 0;
+  Object.values(data2?.matches || {}).forEach(({ win }) => win ? wins++ : losses++);
+  percent = wins > 0 ? Number((wins / (wins + losses) * 100).toFixed(0)) : 0;
+  _wins.text(`${wins}W`);
+  _losses.text(`${losses}L`);
+  _total.text(`${wins + losses}`);
+  _total.append($("<span>").text(`(${percent}%)`));
   _sessionStats.append([_wins, _total, _losses]);
   return _sessionStats;
 };
@@ -3644,15 +3671,9 @@ var createMatchList = (assets2, user) => {
   const __list = $("<div>").addClass("session-matches");
   const participant = getParticipant(user, match_default);
   if (!participant) return __list;
-  const matches = [
-    createMatch(assets2, participant),
-    createMatch(assets2, { ...participant, win: false }),
-    createMatch(assets2, participant),
-    createMatch(assets2, { ...participant, win: false }),
-    createMatch(assets2, { ...participant, win: false }),
-    createMatch(assets2, participant)
-  ];
-  __list.append(matches);
+  const matches = [];
+  if (!matches.length) __list.append($("<p>").addClass("session-matches__no-data").text("No matches"));
+  else __list.append(matches);
   return __list;
 };
 var session_default = async (assets2, { user, character }, firstRender) => {
@@ -3713,6 +3734,8 @@ var getUserData = () => new Promise(async (resolve, reject) => {
     const characterRes = await requests_default.general.getCharacterList(fields, data.summoner.id);
     data.character = characterRes.data?.find((c) => c.queueType === "RANKED_SOLO_5x5") || null;
     if (!data.character) return reject("No character found");
+    const matchListRes = await requests_default.match.getMatchList(fields, data.user.puuid);
+    data.matchIds = matchListRes.data;
     resolve(void 0);
   } catch (err) {
     reject(err.response?.data || err);
@@ -3754,6 +3777,9 @@ var frames = async (firstRender) => {
   if (!assets_default || !data.character || !fields) return;
   const _row = $("<div>").addClass("row");
   const _frames = [];
+  await matches_default(assets_default, data, fields).then((frame) => {
+    if (frame) _frames.push(createFrame("matches", frame));
+  });
   await session_default(assets_default, data, firstRender).then((frame) => {
     if (frame) _frames.push(createFrame("session", frame));
   });

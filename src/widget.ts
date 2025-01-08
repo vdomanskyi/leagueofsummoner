@@ -64,8 +64,8 @@ const getUserData = () =>
       data.character = characterRes.data?.find((c) => c.queueType === 'RANKED_SOLO_5x5') || null;
       if (!data.character) return reject('No character found');
 
-      // const matchListRes = await requests.match.getMatchList(fields, data.user.puuid);
-      // data.matchIds = matchListRes.data;
+      const matchListRes = await requests.match.getMatchList(fields, data.user.puuid);
+      data.matchIds = matchListRes.data;
 
       resolve(undefined);
     } catch (err: any) {
@@ -138,9 +138,9 @@ const frames = async (firstRender?: boolean) => {
   //   if (frame) _frames.push(createFrame('general', frame));
   // });
 
-  // await matches(assets, data, fields).then((frame) => {
-  //   if (frame) _frames.push(createFrame('matches', frame));
-  // });
+  await matches(assets, data, fields).then((frame) => {
+    if (frame) _frames.push(createFrame('matches', frame));
+  });
 
   await session(assets, data, firstRender).then((frame) => {
     if (frame) _frames.push(createFrame('session', frame));

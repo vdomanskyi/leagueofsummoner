@@ -34,6 +34,17 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 4px 8px;
+
+      &__no-data {
+        width: 100%;
+
+        grid-column: 1 / -1;
+
+        text-align: center;
+        color: var(--white);
+
+        opacity: 0.5;
+      }
     }
   }
 }
