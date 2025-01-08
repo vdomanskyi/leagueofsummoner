@@ -94,5 +94,6 @@ export interface StreamelementsAPI {
 export interface SessionStoreData {
   startLP: number;
   currentLP: number;
-  firstRenderMatches: string[];
+  oldMatchIds?: string[];
+  matches?: Match[];
 }

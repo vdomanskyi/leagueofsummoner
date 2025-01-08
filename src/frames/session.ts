@@ -2,43 +2,9 @@ import match from '../match';
 
 import { createMatch, getParticipant } from './matches';
 
-import { Assets, Character, Data, SessionStoreData, User } from '../interfaces/other.interface';
+import { Assets, Data, User } from '../interfaces/other.interface';
 
-const storeName = `LoS_v1.0.0`;
-
-const store = {
-  set: (data: SessionStoreData) => sessionStorage.setItem(storeName, JSON.stringify(data)),
-  get: (): SessionStoreData | null => {
-    const value = sessionStorage.getItem(storeName);
-
-    return !value ? null : JSON.parse(value);
-  },
-  setField: (key: keyof SessionStoreData, value: any) => {
-    const data = store.get();
-
-    if (!data) return new Error('No data found');
-
-    data[key] = value;
-
-    store.set(data);
-  },
-  setup: (character: Character) =>
-    store.set({
-      startLP: character.leaguePoints,
-      currentLP: character.leaguePoints,
-      firstRenderMatches: [],
-    }),
-};
-
-// export const addMatchToStore = (matchId: string, win: boolean) => {
-//   const data = store.get();
-
-//   if (!data) return new Error('No data found');
-
-//   data.matches[matchId] = { win };
-
-//   store.set(data);
-// };
+import store from '../store';
 
 /**
  * Frame elements
@@ -64,7 +30,7 @@ const createTitle = () => {
   return $('<div>').addClass('session-title').append([_title, _lp]);
 };
 
-const createWinTotalLossStats = () => {
+const createWinTotalLossStats = (user: User) => {
   const _sessionStats = $('<div>').addClass('win-total-loss-stats');
 
   const _wins = $('<p>').addClass('wins');
@@ -77,7 +43,12 @@ const createWinTotalLossStats = () => {
   let losses = 0;
   let percent = 0;
 
-  // Object.values(data?.firstRenderMatches || {}).forEach(({ win }) => (win ? wins++ : losses++));
+  data?.matches?.forEach((match) => {
+    const participant = getParticipant(user, match);
+
+    if (participant) participant.win ? wins++ : losses++;
+  });
+
   percent = wins > 0 ? Number(((wins / (wins + losses)) * 100).toFixed(0)) : 0;
 
   _wins.text(`${wins}W`);
@@ -92,13 +63,17 @@ const createWinTotalLossStats = () => {
 };
 
 const createMatchList = (assets: Assets, user: User) => {
+  const storeData = store.get();
+
   const __list = $('<div>').addClass('session-matches');
 
-  const participant = getParticipant(user, match);
-
-  if (!participant) return __list;
-
   const matches: JQuery<HTMLElement>[] = [];
+
+  (storeData?.matches || []).forEach((match) => {
+    const participant = getParticipant(user, match);
+
+    if (participant) matches.push(createMatch(assets, match.metadata.matchId, participant));
+  });
 
   if (!matches.length) __list.append($('<p>').addClass('session-matches__no-data').text('No matches'));
   else __list.append(matches);
@@ -109,8 +84,7 @@ const createMatchList = (assets: Assets, user: User) => {
 export default async (assets: Assets, { user, character }: Data, firstRender?: boolean) => {
   if (!user || !character) return;
 
-  if (firstRender) store.setup(character);
-  else store.setField('currentLP', character.leaguePoints);
+  if (!firstRender) store.setField('currentLP', character.leaguePoints);
 
-  return [createTitle(), createMatchList(assets, user), createWinTotalLossStats()];
+  return [createTitle(), createMatchList(assets, user), createWinTotalLossStats(user)];
 };

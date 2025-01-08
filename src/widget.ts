@@ -173,7 +173,7 @@ const factory = async (firstRender?: boolean) => {
 
     widget.append([F.background, $('<div>').addClass('animation').append(F.row)]);
 
-    animate();
+    // animate();
 
     // setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
 

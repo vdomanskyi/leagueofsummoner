@@ -33,9 +33,18 @@
     .session-matches {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+      justify-content: flex-start;
+      align-items: flex-start;
       gap: 4px 8px;
 
+      height: 100%;
+
       &__no-data {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: 100%;
         width: 100%;
 
         grid-column: 1 / -1;
