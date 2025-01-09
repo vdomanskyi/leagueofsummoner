@@ -103,13 +103,13 @@ var general_default = async (assets2, { summoner, user, character }, hasDivision
 // src/store.ts
 var storeName = `LoS_v1.0.0`;
 var store = {
-  set: (data2) => sessionStorage.setItem(storeName, JSON.stringify(data2)),
-  get: () => {
-    const value = sessionStorage.getItem(storeName);
-    return !value ? null : JSON.parse(value);
+  set: (data2) => SE_API.store.set(storeName, data2),
+  get: async () => {
+    const value = await SE_API.store.get(storeName);
+    return !value ? null : value;
   },
-  setField: (key, value) => {
-    const data2 = store.get();
+  setField: async (key, value) => {
+    const data2 = await store.get();
     if (!data2) return new Error("No data found");
     data2[key] = value;
     store.set(data2);
@@ -126,8 +126,8 @@ var store = {
 var store_default = store;
 
 // src/frames/matches.ts
-var addMatchesToSession = (m) => {
-  const storeData = store_default.get();
+var addMatchesToSession = async (m) => {
+  const storeData = await store_default.get();
   if (!storeData) return;
   const newSessionMatches = m.filter((match) => !storeData.oldMatchIds?.includes(match.metadata.matchId)).filter(
     (match) => !storeData.matches?.some((storedMatch) => storedMatch.metadata.matchId === match.metadata.matchId)
@@ -196,10 +196,10 @@ var matches_default = async (assets2, { user, character, matchIds }, fields2, fi
 };
 
 // src/frames/session.ts
-var createTitle = () => {
+var createTitle = async () => {
   const _title = $("<p>").addClass("session-title__text").text("Session");
   const _lp = $("<p>").addClass("session-title__score");
-  const storeData = store_default.get();
+  const storeData = await store_default.get();
   if (!storeData) _lp.text("No data");
   else {
     const score = (storeData.startLP - (storeData.currentLP || storeData.startLP)) * -1;
@@ -210,12 +210,12 @@ var createTitle = () => {
   }
   return $("<div>").addClass("session-title").append([_title, _lp]);
 };
-var createWinTotalLossStats = (user) => {
+var createWinTotalLossStats = async (user) => {
   const _sessionStats = $("<div>").addClass("win-total-loss-stats");
   const _wins = $("<p>").addClass("wins");
   const _losses = $("<p>").addClass("losses");
   const _total = $("<p>").addClass("total");
-  const data2 = store_default.get();
+  const data2 = await store_default.get();
   let wins = 0;
   let losses = 0;
   let percent = 0;
@@ -231,8 +231,8 @@ var createWinTotalLossStats = (user) => {
   _sessionStats.append([_wins, _total, _losses]);
   return _sessionStats;
 };
-var createMatchList = (assets2, user) => {
-  const storeData = store_default.get();
+var createMatchList = async (assets2, user) => {
+  const storeData = await store_default.get();
   const __list = $("<div>").addClass("session-matches");
   const matches = [];
   (storeData?.matches || []).forEach((match) => {
@@ -245,8 +245,8 @@ var createMatchList = (assets2, user) => {
 };
 var session_default = async (assets2, { user, character }, firstRender) => {
   if (!user || !character) return;
-  if (!firstRender) store_default.setField("currentLP", character.leaguePoints);
-  return [createTitle(), createMatchList(assets2, user), createWinTotalLossStats(user)];
+  if (!firstRender) await store_default.setField("currentLP", character.leaguePoints);
+  return Promise.all([createTitle(), createMatchList(assets2, user), createWinTotalLossStats(user)]);
 };
 
 // src/frames/error.ts

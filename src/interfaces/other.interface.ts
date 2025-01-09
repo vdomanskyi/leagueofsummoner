@@ -81,8 +81,8 @@ export interface Summoner {
 
 export interface StreamelementsAPI {
   store: {
-    set: (storageName: string, data: object) => void;
-    get: (storageName: string) => Promise<object>;
+    set: (storageName: string, data: SessionStoreData) => void;
+    get: (storageName: string) => Promise<SessionStoreData | undefined>;
   };
   counters: {
     get: (counterName: string) => Promise<object>;

@@ -10,11 +10,11 @@ import store from '../store';
  * Frame elements
  */
 
-const createTitle = () => {
+const createTitle = async () => {
   const _title = $('<p>').addClass('session-title__text').text('Session');
   const _lp = $('<p>').addClass('session-title__score');
 
-  const storeData = store.get();
+  const storeData = await store.get();
 
   if (!storeData) _lp.text('No data');
   else {
@@ -30,14 +30,14 @@ const createTitle = () => {
   return $('<div>').addClass('session-title').append([_title, _lp]);
 };
 
-const createWinTotalLossStats = (user: User) => {
+const createWinTotalLossStats = async (user: User) => {
   const _sessionStats = $('<div>').addClass('win-total-loss-stats');
 
   const _wins = $('<p>').addClass('wins');
   const _losses = $('<p>').addClass('losses');
   const _total = $('<p>').addClass('total');
 
-  const data = store.get();
+  const data = await store.get();
 
   let wins = 0;
   let losses = 0;
@@ -62,8 +62,8 @@ const createWinTotalLossStats = (user: User) => {
   return _sessionStats;
 };
 
-const createMatchList = (assets: Assets, user: User) => {
-  const storeData = store.get();
+const createMatchList = async (assets: Assets, user: User) => {
+  const storeData = await store.get();
 
   const __list = $('<div>').addClass('session-matches');
 
@@ -84,7 +84,7 @@ const createMatchList = (assets: Assets, user: User) => {
 export default async (assets: Assets, { user, character }: Data, firstRender?: boolean) => {
   if (!user || !character) return;
 
-  if (!firstRender) store.setField('currentLP', character.leaguePoints);
+  if (!firstRender) await store.setField('currentLP', character.leaguePoints);
 
-  return [createTitle(), createMatchList(assets, user), createWinTotalLossStats(user)];
+  return Promise.all([createTitle(), createMatchList(assets, user), createWinTotalLossStats(user)]);
 };

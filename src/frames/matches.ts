@@ -5,8 +5,8 @@ import store from '../store';
 
 import requests from '../requests';
 
-const addMatchesToSession = (m: Match[]) => {
-  const storeData = store.get();
+const addMatchesToSession = async (m: Match[]) => {
+  const storeData = await store.get();
 
   if (!storeData) return;
 

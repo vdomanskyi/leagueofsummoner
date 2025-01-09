@@ -2,16 +2,15 @@ import { Character, SessionStoreData } from './interfaces/other.interface';
 import { Match } from './interfaces/match.interface';
 
 const storeName = `LoS_v1.0.0`;
-
 const store = {
-  set: (data: SessionStoreData) => sessionStorage.setItem(storeName, JSON.stringify(data)),
-  get: (): SessionStoreData | null => {
-    const value = sessionStorage.getItem(storeName);
+  set: (data: SessionStoreData) => SE_API.store.set(storeName, data),
+  get: async (): Promise<SessionStoreData | null> => {
+    const value = await SE_API.store.get(storeName);
 
-    return !value ? null : JSON.parse(value);
+    return !value ? null : value;
   },
-  setField: (key: keyof SessionStoreData, value: any) => {
-    const data = store.get();
+  setField: async (key: keyof SessionStoreData, value: any) => {
+    const data = await store.get();
 
     if (!data) return new Error('No data found');
 
