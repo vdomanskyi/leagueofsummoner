@@ -35,43 +35,32 @@ var assets = {
 var assets_default = assets;
 
 // src/requests.ts
-var proxy = axios.create({
-  baseURL: "https://kef3rty3rivaxm5m772uucj7de0qhias.lambda-url.eu-north-1.on.aws/",
-  headers: {
-    "Content-Type": "text/plain"
-  }
-});
+var proxy = axios.create({ baseURL: "https://aziankew.mooo.com:3443/proxy" });
 var requests_default = {
   general: {
     getUser: async function(fields2) {
       const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${fields2.gameName}/${fields2.tagLine}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
+      return proxy.post("", { rawPath });
     },
     getCharacterList: async function(fields2, summonerId) {
       const rawPath = `https://${fields2.regionalRouting}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
+      return proxy.post("", { rawPath });
     },
     getSummonerByPUUID: async function(fields2, puuid) {
       const rawPath = `https://${fields2.regionalRouting}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
+      return proxy.post("", { rawPath });
     }
   },
   match: {
     getMatchList: async function(fields2, puuid, count = 7) {
       const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?type=${fields2.matchesType}&start=0&count=${count}&api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
+      return proxy.post("", { rawPath });
     },
     getMatchById: async function(fields2, matchId) {
       const rawPath = `https://${fields2.platformRouting}.api.riotgames.com/lol/match/v5/matches/${matchId}?api_key=${fields2.API_KEY}`;
-      return proxy.post("", rawPath);
+      return proxy.post("", { rawPath });
     }
   }
-  // champion: {
-  //   getChampionTop: async function (fields: Fields, puuid: string, count = 3) {
-  //     const rawPath = `https://${fields.regionalRouting}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}/top?count=${count}&api_key=${fields.API_KEY}`;
-  //     return proxy.post('', { rawPath });
-  //   },
-  // },
 };
 
 // src/frames/general.ts
@@ -316,7 +305,7 @@ var getUserData = () => new Promise(async (resolve, reject) => {
     data.matchIds = matchListRes.data;
     resolve(void 0);
   } catch (err) {
-    reject(err.response?.data || err);
+    reject(err.response?.data || err?.message || err);
   }
 });
 var createBackground = () => {

@@ -69,7 +69,7 @@ const getUserData = () =>
 
       resolve(undefined);
     } catch (err: any) {
-      reject(err.response?.data || err);
+      reject(err.response?.data || err?.message || err);
     }
   });
 
