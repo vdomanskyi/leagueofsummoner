@@ -134,9 +134,9 @@ const frames = async (firstRender?: boolean) => {
   const _row = $('<div>').addClass('row');
   const _frames: JQuery<HTMLElement>[] = [];
 
-  // await general(assets, data, hasDivisions[data.character.tier], firstRender).then((frame) => {
-  //   if (frame) _frames.push(createFrame('general', frame));
-  // });
+  await general(assets, data, hasDivisions[data.character.tier], firstRender).then((frame) => {
+    if (frame) _frames.push(createFrame('general', frame));
+  });
 
   await matches(assets, data, fields, firstRender).then((frame) => {
     if (frame) _frames.push(createFrame('matches', frame));
@@ -146,8 +146,7 @@ const frames = async (firstRender?: boolean) => {
     if (frame) _frames.push(createFrame('session', frame));
   });
 
-  // if (_frames.length) _row.append([..._frames, $(_frames[0]).clone(true)]);
-  if (_frames.length) _row.append([..._frames]);
+  if (_frames.length) _row.append([..._frames, $(_frames[0]).clone(true)]);
 
   $('.row').remove();
   $('.background').remove();
@@ -173,9 +172,9 @@ const factory = async (firstRender?: boolean) => {
 
     widget.append([F.background, $('<div>').addClass('animation').append(F.row)]);
 
-    // animate();
+    animate();
 
-    // setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 3000);
+    setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 15000);
 
     if (firstRender) widget.removeClass('loading').append(createBorder());
   } catch (err: any) {

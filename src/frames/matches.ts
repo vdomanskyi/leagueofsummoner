@@ -4,7 +4,6 @@ import { Assets, Data, Fields, User } from '../interfaces/other.interface';
 import store from '../store';
 
 import requests from '../requests';
-import match from '../match';
 
 const addMatchesToSession = (m: Match[]) => {
   const storeData = store.get();
@@ -22,7 +21,9 @@ const addMatchesToSession = (m: Match[]) => {
 
     seesionMatches.unshift(...newSessionMatches);
 
-    if (seesionMatches.length === 6) seesionMatches.splice(6);
+    if (seesionMatches.length >= 6) seesionMatches.splice(6);
+
+    console.log('seesionMatches', seesionMatches);
 
     store.setField('matches', seesionMatches);
   }

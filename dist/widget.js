@@ -74,6 +74,43 @@ var requests_default = {
   // },
 };
 
+// src/frames/general.ts
+var createAvatar = (assets2, summoner, character, hasDivisions2) => {
+  const _avatar = $("<div>").addClass("avatar");
+  const _icon = $("<img>").addClass("icon").attr("src", `${assets2.profileIcon}/${summoner.profileIconId}.jpg`);
+  const _ranked = $("<img>").addClass("ranked").attr("src", `${assets2.rankedFolder}/${assets2.ranked[character.tier]}`);
+  if (hasDivisions2) _avatar.append($("<div>").addClass("division").append($("<p>").text(character.rank)));
+  _avatar.append([_ranked, _icon]);
+  return _avatar;
+};
+var createCharacter = (character, user) => {
+  const _character = $("<div>").addClass("character");
+  const _lp = $("<p>").addClass("lp").text(`${character.leaguePoints}LP`);
+  const _username = $("<div>").addClass("username").append($("<p>").text(`${user.gameName}#${user.tagLine}`));
+  _character.append([_lp, _username]);
+  return _character;
+};
+var createCharacterStats = (character) => {
+  const _characterStats = $("<div>").addClass("win-total-loss-stats");
+  const wins = character.wins || 0;
+  const losses = character.losses || 0;
+  const percent = wins > 0 ? (wins / (wins + losses) * 100).toFixed(0) : 0;
+  const _wins = $("<p>").addClass("wins").text(`${wins}W`);
+  const _losses = $("<p>").addClass("losses").text(`${losses}L`);
+  const _total = $("<p>").addClass("total");
+  _total.text(`${wins + losses}`).append($("<span>").text(`(${percent}%)`));
+  _characterStats.append([_wins, _total, _losses]);
+  return _characterStats;
+};
+var general_default = async (assets2, { summoner, user, character }, hasDivisions2, firstRender) => {
+  if (!user || !character || !summoner) return;
+  return [
+    createAvatar(assets2, summoner, character, hasDivisions2),
+    createCharacter(character, user),
+    createCharacterStats(character)
+  ];
+};
+
 // src/store.ts
 var storeName = `LoS_v1.0.0`;
 var store = {
@@ -93,7 +130,6 @@ var store = {
       startLP: character.leaguePoints,
       currentLP: character.leaguePoints,
       oldMatchIds: matches.map((m) => m.metadata.matchId),
-      // matches: matches.slice(0, 6),
       matches: []
     });
   }
@@ -110,7 +146,8 @@ var addMatchesToSession = (m) => {
   if (newSessionMatches.length) {
     const seesionMatches = storeData.matches || [];
     seesionMatches.unshift(...newSessionMatches);
-    if (seesionMatches.length === 6) seesionMatches.splice(6);
+    if (seesionMatches.length >= 6) seesionMatches.splice(6);
+    console.log("seesionMatches", seesionMatches);
     store_default.setField("matches", seesionMatches);
   }
 };
@@ -292,6 +329,23 @@ var createBorder = () => {
   const _borderLeftRight = $("<img>").addClass("border").addClass("left-right").attr("src", border.leftRight);
   return [_borderTopBottom, _borderLeftRight];
 };
+var animate = () => {
+  if (!fields) return;
+  const row = $(".row");
+  const width = row.width();
+  const countFrames = row.children().length;
+  const frameWidth = width / countFrames;
+  const timeline = gsap.timeline({
+    repeat: -1,
+    repeatDelay: 0,
+    defaults: { ease: Power1.easeInOut, duration: fields.transitionDuration }
+  });
+  for (let i = 0; i < countFrames; i++) {
+    const gap = frameWidth * i * -1;
+    const time = i === 1 ? "<" : `>+${fields.pauseDuration}`;
+    timeline.to(".animation", { x: gap }, time);
+  }
+};
 var createFrame = (className, node) => {
   const _frame = $("<div>").addClass("frame").addClass(className);
   const _content = $("<div>").addClass("content").append(node);
@@ -301,13 +355,16 @@ var frames = async (firstRender) => {
   if (!assets_default || !data.character || !fields) return;
   const _row = $("<div>").addClass("row");
   const _frames = [];
+  await general_default(assets_default, data, hasDivisions[data.character.tier], firstRender).then((frame) => {
+    if (frame) _frames.push(createFrame("general", frame));
+  });
   await matches_default(assets_default, data, fields, firstRender).then((frame) => {
     if (frame) _frames.push(createFrame("matches", frame));
   });
   await session_default(assets_default, data, firstRender).then((frame) => {
     if (frame) _frames.push(createFrame("session", frame));
   });
-  if (_frames.length) _row.append([..._frames]);
+  if (_frames.length) _row.append([..._frames, $(_frames[0]).clone(true)]);
   $(".row").remove();
   $(".background").remove();
   return {
@@ -324,6 +381,8 @@ var factory = async (firstRender) => {
     $(".animation").remove();
     if (!F?.background || !F.row) return;
     widget.append([F.background, $("<div>").addClass("animation").append(F.row)]);
+    animate();
+    setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 15e3);
     if (firstRender) widget.removeClass("loading").append(createBorder());
   } catch (err) {
     widget.removeClass("loading").addClass("error").append(createFrame("issue", error_default(err ? JSON.stringify(err) : "Something went wrong", !err)));

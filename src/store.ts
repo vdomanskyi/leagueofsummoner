@@ -24,8 +24,7 @@ const store = {
       startLP: character.leaguePoints,
       currentLP: character.leaguePoints,
       oldMatchIds: matches.map((m) => m.metadata.matchId),
-      matches: matches.slice(0, 6),
-      // matches: [],
+      matches: [],
     });
   },
 };
