@@ -16,6 +16,11 @@ export type Assets = {
   ranked: Record<RANKED, string>;
 };
 
+export interface RiotError {
+  message: string;
+  status_code: number;
+}
+
 export enum RANKED {
   IRON = 'IRON',
   BRONZE = 'BRONZE',
@@ -35,10 +40,11 @@ export interface Fields {
   flipBorder: boolean;
   regionalRouting: string;
   platformRouting: string;
-  matchesType: string;
+  matchesType: MATCH_TYPE;
   gameName: string;
   tagLine: string;
   API_KEY: string;
+  rankedQueue: RANKED_QUEUE;
 }
 
 export interface Data {
@@ -51,7 +57,7 @@ export interface Data {
 
 export interface Character {
   leagueId: string;
-  queueType: string;
+  queueType: RANKED_QUEUE;
   tier: RANKED;
   rank: string;
   summonerId: string;
@@ -79,21 +85,24 @@ export interface Summoner {
   summonerLevel: number;
 }
 
-export interface StreamelementsAPI {
-  store: {
-    set: (storageName: string, data: SessionStoreData) => void;
-    get: (storageName: string) => Promise<SessionStoreData | undefined>;
-  };
-  counters: {
-    get: (counterName: string) => Promise<object>;
-  };
-  sanitize: (data: any) => Promise<{ result: string; skip: boolean }>;
-  getOverlayStatus: () => { isEditorMode: boolean; muted: boolean };
+export interface Dataset {
+  fields: Fields | null;
+  user: User | null;
+  character: Character | null;
+  summoner: Summoner | null;
+
+  matcheIds: string[];
+  matches: Match[];
 }
 
-export interface SessionStoreData {
-  startLP: number;
-  currentLP: number;
-  oldMatchIds?: string[];
-  matches?: Match[];
+export enum RANKED_QUEUE {
+  RANKED_FLEX_SR = 'RANKED_FLEX_SR',
+  RANKED_SOLO_5x5 = 'RANKED_SOLO_5x5',
+}
+
+export enum MATCH_TYPE {
+  ranked = 'ranked',
+  normal = 'normal',
+  tourney = 'tourney',
+  tutorial = 'tutorial',
 }

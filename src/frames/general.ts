@@ -1,4 +1,4 @@
-import type { Assets, Character, Data, Summoner, User } from '../interfaces/other.interface';
+import type { Assets, Character, Dataset, Summoner, User } from '../interfaces/other.interface';
 
 const createAvatar = (assets: Assets, summoner: Summoner, character: Character, hasDivisions: boolean) => {
   const _avatar = $('<div>').addClass('avatar');
@@ -44,17 +44,15 @@ const createCharacterStats = (character: Character) => {
   return _characterStats;
 };
 
-export default async (
-  assets: Assets,
-  { summoner, user, character }: Data,
-  hasDivisions: boolean,
-  firstRender?: boolean
-): Promise<JQuery<HTMLElement>[] | undefined> => {
-  if (!user || !character || !summoner) return;
+export default async (assets: Assets, dataset: Dataset, hasDivisions: boolean) => {
+  return new Promise<Array<JQuery<HTMLElement>>>((resolve, reject) => {
+    if (!dataset.character || !dataset.summoner || !dataset.user)
+      return reject('No character, summoner, or user found');
 
-  return [
-    createAvatar(assets, summoner, character, hasDivisions),
-    createCharacter(character, user),
-    createCharacterStats(character),
-  ];
+    resolve([
+      createAvatar(assets, dataset.summoner, dataset.character, hasDivisions),
+      createCharacter(dataset.character, dataset.user),
+      createCharacterStats(dataset.character),
+    ]);
+  });
 };

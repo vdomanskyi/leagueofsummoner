@@ -51,6 +51,15 @@
       "SEA": "SEA"
     }
   },
+  "rankedQueue": {
+    "type": "dropdown",
+    "label": "Ranked queue",
+    "value": "RANKED_SOLO_5x5",
+    "options": {
+      "RANKED_SOLO_5x5": "RANKED_SOLO_5x5",
+      "RANKED_FLEX_SR": "RANKED_FLEX_SR"
+    }
+  },
   "matchesType": {
     "type": "dropdown",
     "label": "Select match type",
