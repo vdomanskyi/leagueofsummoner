@@ -1,9 +1,20 @@
-import assets from './assets';
+import assets from './static/assets';
 
 import general from './frames/general';
+import matches from './frames/matches';
+import session from './frames/session';
 
 import { Match } from './interfaces/match.interface';
-import { Character, Dataset, Detail, RANKED, RiotError, Summoner, User } from './interfaces/other.interface';
+import {
+  Character,
+  Dataset,
+  Detail,
+  RANKED,
+  RiotError,
+  SessionStore,
+  Summoner,
+  User,
+} from './interfaces/other.interface';
 
 import requests from './requests';
 
@@ -39,6 +50,12 @@ const dataset: Dataset = {
   matches: [],
 };
 
+const sessionstore: SessionStore = {
+  matches: [],
+  startLP: 0,
+  currentLP: 0,
+};
+
 /**
  * GET DATA
  */
@@ -69,6 +86,10 @@ const fetchData = async (firstRender?: boolean) => {
 
       if (!dataset.character) return reject('No character found');
 
+      firstRender
+        ? (sessionstore.startLP = dataset.character.leaguePoints)
+        : (sessionstore.currentLP = dataset.character.leaguePoints);
+
       const matchIds = await requests.match.getMatchList(dataset.fields, dataset.summoner.puuid);
       if (Object.hasOwn(matchIds.data, 'status_code')) return reject((matchIds.data as RiotError).message);
       else dataset.matcheIds = matchIds.data as string[];
@@ -79,9 +100,16 @@ const fetchData = async (firstRender?: boolean) => {
             const match = await requests.match.getMatchById(dataset.fields, matchId);
             if (Object.hasOwn(match.data, 'status_code')) return reject((match.data as RiotError).message);
             else dataset.matches.push(match.data as Match);
+
+            if (!firstRender) {
+              sessionstore.matches.unshift(match.data as Match);
+              sessionstore.matches.splice(6);
+            }
           }
         })
       );
+
+      dataset.matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
 
       resolve(undefined);
     } catch (error: any) {
@@ -111,32 +139,31 @@ const createBorder = () => {
   return [_borderTopBottom, _borderLeftRight];
 };
 
+const animate = () => {
+  if (!dataset.fields) return;
+
+  const row = $('.row');
+
+  const width = row.width() || 0;
+  const countFrames = row.children().length;
+
+  const timeline = gsap.timeline({
+    repeat: -1,
+    repeatDelay: 0,
+    defaults: { ease: Power1.easeInOut, duration: dataset.fields.transitionDuration },
+  });
+
+  for (let i = 0; i < countFrames; i++) {
+    const gap = width * i * -1;
+    const time = i === 1 ? '<' : `>+${dataset.fields.pauseDuration}`;
+
+    timeline.to('.row', { x: gap }, time);
+  }
+};
+
 /**
  * INITIALIZE
  */
-
-// const animate = () => {
-//   if (!fields) return;
-
-//   const row = $('.row');
-
-//   const width = row.width()!;
-//   const countFrames = row.children().length;
-//   const frameWidth = width / countFrames;
-
-//   const timeline = gsap.timeline({
-//     repeat: -1,
-//     repeatDelay: 0,
-//     defaults: { ease: Power1.easeInOut, duration: fields.transitionDuration },
-//   });
-
-//   for (let i = 0; i < countFrames; i++) {
-//     const gap = frameWidth * i * -1;
-//     const time = i === 1 ? '<' : `>+${fields.pauseDuration}`;
-
-//     timeline.to('.animation', { x: gap }, time);
-//   }
-// };
 
 const createFrame = (className: string, node: JQuery<HTMLElement>[]) => {
   const _frame = $('<div>').addClass('frame').addClass(className);
@@ -145,7 +172,7 @@ const createFrame = (className: string, node: JQuery<HTMLElement>[]) => {
   return _frame.append(_content);
 };
 
-const frames = async (firstRender?: boolean) => {
+const frames = async () => {
   if (!assets || !dataset.character || !dataset.fields) return;
 
   const _row = $('<div>').addClass('row');
@@ -154,6 +181,12 @@ const frames = async (firstRender?: boolean) => {
   try {
     const _general = await general(assets, dataset, hasDivisions[dataset.character!.tier]);
     _frames.push(createFrame('general', _general));
+
+    const _matches = await matches(assets, dataset);
+    _frames.push(createFrame('matches', _matches));
+
+    const _session = await session(assets, dataset, sessionstore);
+    _frames.push(createFrame('session', _session));
   } catch (error: any) {
     //
   }
@@ -164,7 +197,7 @@ const frames = async (firstRender?: boolean) => {
   $('.background').remove();
 
   return {
-    frames: [createBackground(), _row],
+    frames: [createBackground()!, _row],
     countFrames: _row.children().length,
   };
 };
@@ -175,13 +208,10 @@ const factory = async (firstRender?: boolean) => {
   try {
     await fetchData(firstRender);
 
-    const F = await frames(firstRender);
+    const F = await frames();
+    widget.append(F?.frames || []);
 
-    // if (!F?.background || !F.row) return;
-
-    // widget.append([F.background, $('<div>').addClass('animation').append(F.row)]);
-
-    // animate();
+    animate();
 
     // setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 15000);
 

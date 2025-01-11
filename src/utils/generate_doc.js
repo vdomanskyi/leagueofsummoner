@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const __dist = path.resolve(__dirname, '../../dist');
-const __fields = path.resolve(__dirname, '../fields.json');
+const __fields = path.resolve(__dirname, '../static/fields.json');
 const __obtainAPIKey = path.resolve(__dirname, '../documentation/Text to obtain a personal API key.txt');
 const __streamelements = path.resolve(__dirname, '../documentation/streamelements.txt');
 

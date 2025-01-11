@@ -1,90 +1,81 @@
-// import match from '../match';
+import { createMatch, getParticipant } from './matches';
 
-// import { createMatch, getParticipant } from './matches';
+import { Dataset, SessionStore, User } from '../interfaces/other.interface';
+import { Assets } from '../interfaces/other.interface';
 
-// import { Assets, Data, User } from '../interfaces/other.interface';
+const createTitle = (session: SessionStore) => {
+  const _title = $('<p>').addClass('session-title__text').text('SessionStore');
+  const _lp = $('<p>').addClass('session-title__score');
 
-// import store from '../store';
+  const score = (session.startLP - session.currentLP) * -1;
 
-// /**
-//  * Frame elements
-//  */
+  _lp.text(`${score > 0 ? '+' : ''}${score}LP`);
 
-// const createTitle = async () => {
-//   const _title = $('<p>').addClass('session-title__text').text('Session');
-//   const _lp = $('<p>').addClass('session-title__score');
+  if (score > 0) _lp.addClass('win');
+  else if (score < 0) _lp.addClass('loss');
+  else _lp.removeClass('win').removeClass('loss');
 
-//   const storeData = await store.get();
+  return $('<div>').addClass('session-title').append([_title, _lp]);
+};
 
-//   if (!storeData) _lp.text('No data');
-//   else {
-//     const score = (storeData.startLP - (storeData.currentLP || storeData.startLP)) * -1;
+const createWinTotalLossStats = (user: User, session: SessionStore) => {
+  const _sessionStats = $('<div>').addClass('win-total-loss-stats');
 
-//     _lp.text(`${score > 0 ? '+' : ''}${score}LP`);
+  const _wins = $('<p>').addClass('wins');
+  const _losses = $('<p>').addClass('losses');
+  const _total = $('<p>').addClass('total');
 
-//     if (score > 0) _lp.addClass('win');
-//     else if (score < 0) _lp.addClass('loss');
-//     else _lp.removeClass('win').removeClass('loss');
-//   }
+  let wins = 0;
+  let losses = 0;
+  let percent = 0;
 
-//   return $('<div>').addClass('session-title').append([_title, _lp]);
-// };
+  session.matches.forEach((match) => {
+    const participant = getParticipant(user, match);
 
-// const createWinTotalLossStats = async (user: User) => {
-//   const _sessionStats = $('<div>').addClass('win-total-loss-stats');
+    if (participant) participant.win ? wins++ : losses++;
+  });
 
-//   const _wins = $('<p>').addClass('wins');
-//   const _losses = $('<p>').addClass('losses');
-//   const _total = $('<p>').addClass('total');
+  percent = wins > 0 ? Number(((wins / (wins + losses)) * 100).toFixed(0)) : 0;
 
-//   const data = await store.get();
+  _wins.text(`${wins}W`);
+  _losses.text(`${losses}L`);
+  _total.text(`${wins + losses}`);
 
-//   let wins = 0;
-//   let losses = 0;
-//   let percent = 0;
+  _total.append($('<span>').text(`(${percent}%)`));
 
-//   data?.matches?.forEach((match) => {
-//     const participant = getParticipant(user, match);
+  _sessionStats.append([_wins, _total, _losses]);
 
-//     if (participant) participant.win ? wins++ : losses++;
-//   });
+  return _sessionStats;
+};
 
-//   percent = wins > 0 ? Number(((wins / (wins + losses)) * 100).toFixed(0)) : 0;
+const createMatchList = (assets: Assets, user: User, session: SessionStore) => {
+  const __list = $('<div>').addClass('session-matches');
 
-//   _wins.text(`${wins}W`);
-//   _losses.text(`${losses}L`);
-//   _total.text(`${wins + losses}`);
+  const matches: JQuery<HTMLElement>[] = [];
 
-//   _total.append($('<span>').text(`(${percent}%)`));
+  session.matches.forEach((match) => {
+    const participant = getParticipant(user, match);
 
-//   _sessionStats.append([_wins, _total, _losses]);
+    if (!participant) return;
 
-//   return _sessionStats;
-// };
+    matches.push(createMatch(assets, match.metadata.matchId, participant));
+  });
 
-// const createMatchList = async (assets: Assets, user: User) => {
-//   const storeData = await store.get();
+  if (!matches.length) __list.append($('<p>').addClass('session-matches__no-data').text('No matches'));
+  else __list.append(matches);
 
-//   const __list = $('<div>').addClass('session-matches');
+  return __list;
+};
 
-//   const matches: JQuery<HTMLElement>[] = [];
+export default async (assets: Assets, dataset: Dataset, session: SessionStore) => {
+  return new Promise<Array<JQuery<HTMLElement>>>((resolve, reject) => {
+    if (!dataset.character || !dataset.summoner || !dataset.user)
+      return reject('No character, summoner, or user found');
 
-//   (storeData?.matches || []).forEach((match) => {
-//     const participant = getParticipant(user, match);
-
-//     if (participant) matches.push(createMatch(assets, match.metadata.matchId, participant));
-//   });
-
-//   if (!matches.length) __list.append($('<p>').addClass('session-matches__no-data').text('No matches'));
-//   else __list.append(matches);
-
-//   return __list;
-// };
-
-// export default async (assets: Assets, { user, character }: Data, firstRender?: boolean) => {
-//   if (!user || !character) return;
-
-//   if (!firstRender) await store.setField('currentLP', character.leaguePoints);
-
-//   return Promise.all([createTitle(), createMatchList(assets, user), createWinTotalLossStats(user)]);
-// };
+    resolve([
+      createTitle(session),
+      createMatchList(assets, dataset.user, session),
+      createWinTotalLossStats(dataset.user, session),
+    ]);
+  });
+};

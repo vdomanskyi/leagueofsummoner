@@ -95,6 +95,12 @@ export interface Dataset {
   matches: Match[];
 }
 
+export interface SessionStore {
+  matches: Match[];
+  startLP: number;
+  currentLP: number;
+}
+
 export enum RANKED_QUEUE {
   RANKED_FLEX_SR = 'RANKED_FLEX_SR',
   RANKED_SOLO_5x5 = 'RANKED_SOLO_5x5',
