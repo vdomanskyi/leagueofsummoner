@@ -22,7 +22,7 @@ Obtain your API key from the [Riot Developer Portal](https://developer.riotgames
 
 2. **Add Code to StreamElements**
 
-   - Open this [link](https://cdn.jsdelivr.net/npm/leagueofsummoner@2.3.1/dist/documentation/streamelements.txt). This file contains code snippets that must be copied into specific tabs in StreamElements Overlay.
+   - Open this [link](https://cdn.jsdelivr.net/npm/leagueofsummoner@2.3.2/dist/documentation/streamelements.txt). This file contains code snippets that must be copied into specific tabs in StreamElements Overlay.
    - Ensure all tabs not mentioned in the file remain **empty**.
    - Enter data in each field.
 
@@ -30,7 +30,7 @@ _⚠️ **Important:** Keep your API key secure. Do not share or display it to o
 
 ### How to get Personal API key
 
-To obtain your Personal API Key, refer to the step-by-step instructions provided in [here](https://cdn.jsdelivr.net/npm/leagueofsummoner@2.3.1/dist/documentation/Text%20to%20obtain%20a%20personal%20API%20key.txt). The file contains all the details needed to securely generate your key from the Riot Developer Portal.
+To obtain your Personal API Key, refer to the step-by-step instructions provided in [here](https://cdn.jsdelivr.net/npm/leagueofsummoner@2.3.2/dist/documentation/Text%20to%20obtain%20a%20personal%20API%20key.txt). The file contains all the details needed to securely generate your key from the Riot Developer Portal.
 
 ### Update version
 
