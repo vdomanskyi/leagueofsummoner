@@ -23,20 +23,6 @@
     .playground {
      /* overflow: hidden; */
     }
-
-    .test {
-        background: red;
-    }
-    .test2 {
-        background: green;
-    }
-    .test3 {
-        background: yellow;
-    }
-    .test4 {
-        background: blue;
-    }
-
   </style>
 </head>
 
@@ -47,11 +33,25 @@
 </body>
 
 <script src="./dist/widget.js"></script>
-<script>
-const detail = {"gameName":"agrsv","tagLine":"EUW","API_KEY":"RGAPI-8acdc001-4044-46dc-af17-f2b0db45fea4","flipBorder":"false","pauseDuration":5,"flipContent":"false", "flipBorder":"false", "matchesType": "ranked","regionalRouting": "EUW1", "platformRouting": "EUROPE", "transitionDuration": 3};
-setTimeout(() => {
-  window.dispatchEvent(new CustomEvent('onWidgetLoad', { detail: { fieldData: detail } }))
-}, 1000)
 
+<script>
+  const detail = {
+    gameName: 'agrsv',
+    tagLine: 'EUW',
+    flipBorder: 'false',
+    pauseDuration: 5,
+    flipContent: 'false',
+    flipBorder: 'false',
+    matchesType: 'ranked',
+    regionalRouting: 'EUW1',
+    platformRouting: 'EUROPE',
+    transitionDuration: 3,
+    rankedQueue: 'RANKED_SOLO_5x5',
+    API_KEY: 'RGAPI-8acdc001-4044-46dc-af17-f2b0db45fea4',
+  }
+
+  setTimeout(() => {
+    window.dispatchEvent(new CustomEvent('onWidgetLoad', { detail: { fieldData: detail } }))
+  }, 1000)
 </script>
 </html>

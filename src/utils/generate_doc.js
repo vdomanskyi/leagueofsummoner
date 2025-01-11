@@ -6,11 +6,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const __dist = path.resolve(__dirname, '../../dist');
-const __fields = path.resolve(__dirname, '../fields.json');
+const __fields = path.resolve(__dirname, '../static/fields.json');
 const __obtainAPIKey = path.resolve(__dirname, '../documentation/Text to obtain a personal API key.txt');
 const __streamelements = path.resolve(__dirname, '../documentation/streamelements.txt');
-
-const __oldAssets = path.resolve(__dirname, './assets.json');
 
 const pkg = fsx.readJSONSync('./package.json');
 const fields = fsx.readJsonSync(__fields, 'utf-8');
@@ -23,7 +21,4 @@ fsx.writeFileSync(
   'utf-8'
 );
 
-fsx.copyFileSync(__oldAssets, path.resolve(__dist, path.parse(__oldAssets).base));
-
-// For <=1.0.6 versions
 fsx.copyFileSync(__obtainAPIKey, path.resolve(__dist, 'documentation', path.parse(__obtainAPIKey).base));

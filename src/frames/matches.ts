@@ -1,33 +1,7 @@
-import { Match, Participant } from '../interfaces/match.interface';
-import { Assets, Data, Fields, User } from '../interfaces/other.interface';
-
-import store from '../store';
-
-import requests from '../requests';
-
-const addMatchesToSession = async (m: Match[]) => {
-  const storeData = await store.get();
-
-  if (!storeData) return;
-
-  const newSessionMatches = m
-    .filter((match) => !storeData.oldMatchIds?.includes(match.metadata.matchId))
-    .filter(
-      (match) => !storeData.matches?.some((storedMatch) => storedMatch.metadata.matchId === match.metadata.matchId)
-    );
-
-  if (newSessionMatches.length) {
-    const seesionMatches = storeData.matches || [];
-
-    seesionMatches.unshift(...newSessionMatches);
-
-    if (seesionMatches.length >= 6) seesionMatches.splice(6);
-
-    console.log('seesionMatches', seesionMatches);
-
-    store.setField('matches', seesionMatches);
-  }
-};
+import { Assets } from '../interfaces/other.interface';
+import { Dataset, User } from '../interfaces/other.interface';
+import { Match } from '../interfaces/match.interface';
+import { Participant } from '../interfaces/match.interface';
 
 export const getParticipant = (user: User, match: Match) =>
   match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
@@ -81,44 +55,26 @@ const createLastMatch = (assets: Assets, matchId: string, participant: Participa
   return _lastMatch;
 };
 
-export default async (assets: Assets, { user, character, matchIds }: Data, fields: Fields, firstRender?: boolean) => {
-  if (!user || !character) return;
+export default async (assets: Assets, dataset: Dataset) => {
+  return new Promise<Array<JQuery<HTMLElement>>>((resolve, reject) => {
+    if (!dataset.character || !dataset.summoner || !dataset.user)
+      return reject('No character, summoner, or user found');
 
-  const matches: Match[] = [];
+    if (!dataset.matches.length) return resolve([$('<p>').addClass('matches__no-data').text('No matches')]);
 
-  const _list: Array<JQuery<HTMLElement>> = [];
-  const _previousMatches: Array<JQuery<HTMLElement>> = [];
+    const _previous: Array<JQuery<HTMLElement>> = [];
+    let _last: JQuery<HTMLElement> | null = null;
 
-  let _lastMatch: JQuery<HTMLElement> | null = null;
+    dataset.matches.forEach((match, index) => {
+      const participant = getParticipant(dataset.user!, match);
 
-  await Promise.all(
-    matchIds.map((id) =>
-      requests.match.getMatchById(fields, id).then((res) => {
-        matches.push(res.data);
-      })
-    )
-  );
+      if (!participant) return;
 
-  if (firstRender) store.init(character, matches);
-  else addMatchesToSession(matches);
+      index
+        ? _previous.push(createMatch(assets, match.metadata.matchId, participant))
+        : (_last = createLastMatch(assets, match.metadata.matchId, participant));
+    });
 
-  matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
-
-  matches.forEach((match, index) => {
-    const participant = getParticipant(user, match);
-
-    if (!participant) return;
-
-    index
-      ? _previousMatches.push(createMatch(assets, match.metadata.matchId, participant))
-      : (_lastMatch = createLastMatch(assets, match.metadata.matchId, participant));
+    resolve([_last!, $('<div>').addClass('matches').append(_previous)]);
   });
-
-  if (_lastMatch) _list.push(_lastMatch);
-
-  _list.push($('<div>').addClass('matches').append(_previousMatches));
-
-  console.log('interval');
-
-  return _list;
 };
