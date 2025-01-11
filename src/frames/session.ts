@@ -4,7 +4,7 @@ import { Dataset, SessionStore, User } from '../interfaces/other.interface';
 import { Assets } from '../interfaces/other.interface';
 
 const createTitle = (session: SessionStore) => {
-  const _title = $('<p>').addClass('session-title__text').text('SessionStore');
+  const _title = $('<p>').addClass('session-title__text').text('Session');
   const _lp = $('<p>').addClass('session-title__score');
 
   const score = (session.startLP - session.currentLP) * -1;

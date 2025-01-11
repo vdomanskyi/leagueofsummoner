@@ -1,5 +1,7 @@
 import assets from './static/assets';
 
+import error from './frames/error';
+
 import general from './frames/general';
 import matches from './frames/matches';
 import session from './frames/session';
@@ -87,7 +89,8 @@ const fetchData = async (firstRender?: boolean) => {
       if (!dataset.character) return reject('No character found');
 
       firstRender
-        ? (sessionstore.startLP = dataset.character.leaguePoints)
+        ? ((sessionstore.startLP = dataset.character.leaguePoints),
+          (sessionstore.currentLP = dataset.character.leaguePoints))
         : (sessionstore.currentLP = dataset.character.leaguePoints);
 
       const matchIds = await requests.match.getMatchList(dataset.fields, dataset.summoner.puuid);
@@ -101,15 +104,16 @@ const fetchData = async (firstRender?: boolean) => {
             if (Object.hasOwn(match.data, 'status_code')) return reject((match.data as RiotError).message);
             else dataset.matches.push(match.data as Match);
 
-            if (!firstRender) {
-              sessionstore.matches.unshift(match.data as Match);
-              sessionstore.matches.splice(6);
-            }
+            if (!firstRender) sessionstore.matches.unshift(match.data as Match);
           }
         })
       );
 
       dataset.matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+      sessionstore.matches.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+
+      dataset.matches.splice(7);
+      sessionstore.matches.splice(6);
 
       resolve(undefined);
     } catch (error: any) {
@@ -209,16 +213,22 @@ const factory = async (firstRender?: boolean) => {
     await fetchData(firstRender);
 
     const F = await frames();
-    widget.append(F?.frames || []);
+    if (!F) return new Error('No frames created');
+
+    const timer = (F.countFrames - 1) * (dataset.fields.pauseDuration + dataset.fields.transitionDuration) * 15000;
+
+    widget.append(F.frames || []);
 
     animate();
 
-    // setTimeout(factory, (F.countFrames - 1) * (fields.pauseDuration + fields.transitionDuration) * 15000);
+    setTimeout(factory, timer);
 
     if (firstRender) widget.removeClass('loading').append(createBorder());
-  } catch (error: any) {
-    widget.removeClass('loading').addClass('error');
-    // .append(createFrame('issue', error(err ? JSON.stringify(err) : 'Something went wrong', !err)));
+  } catch (err: any) {
+    widget
+      .removeClass('loading')
+      .addClass('error')
+      .append(createFrame('issue', error(err)));
   }
 };
 

@@ -21,7 +21,7 @@ export default {
   },
 
   match: {
-    getMatchList: async function (fields: Fields, puuid: string, count = 1) {
+    getMatchList: async function (fields: Fields, puuid: string, count = 7) {
       const rawPath = `https://${fields.platformRouting}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?type=${fields.matchesType}&start=0&count=${count}&api_key=${fields.API_KEY}`;
       return proxy.post<string[] | RiotError>('', { rawPath });
     },
