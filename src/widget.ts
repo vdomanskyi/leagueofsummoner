@@ -219,7 +219,7 @@ const factory = async (firstRender?: boolean) => {
 
     widget.append(F.frames || []);
 
-    // animate();
+    animate();
 
     setTimeout(factory, timer);
 
