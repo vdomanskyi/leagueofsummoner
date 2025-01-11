@@ -12,7 +12,8 @@
     "build:remove": "rm -rf dist",
     "build:widget": " npx esbuild src/widget.ts --bundle --outfile=dist/widget.js --platform=node",
     "build:styles": "sass src/styles/index.scss dist/style.css",
-    "build:doc": "node src/utils/generate_doc.js"
+    "build:doc": "node src/utils/generate_doc.js",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
     "gsap": "^3.12.5",
+    "husky": "^9.1.7",
     "npm-run-all2": "^7.0.2",
     "sass": "^1.81.0",
     "typescript": "^5.7.2"
