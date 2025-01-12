@@ -1,4 +1,4 @@
-<!-- ![](./example.gif) -->
+![](./example.jpg)
 
 # League of Summoner Widget
 
@@ -10,6 +10,7 @@ The **League of Summoner** widget displays real-time data for a summoner, includ
 
 _**No data is stored on our servers.**_
 <br />
+
 ### How to Use
 
 Obtain your API key from the [Riot Developer Portal](https://developer.riotgames.com/app-type).
