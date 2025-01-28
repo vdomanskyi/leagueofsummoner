@@ -65,6 +65,7 @@
     "label": "Select match type",
     "value": "ranked",
     "options": {
+      "": "none",
       "ranked": "ranked",
       "normal": "normal",
       "tourney": "tourney",
