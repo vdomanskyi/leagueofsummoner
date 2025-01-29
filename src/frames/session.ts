@@ -1,21 +1,20 @@
-import { createMatch, getParticipant } from './matches';
+import { createMatch } from './matches';
 
-import { Dataset, SessionStore, User } from '../interfaces/other.interface';
-import { Assets } from '../interfaces/other.interface';
+import { Assets, Dataset, SessionStore, User } from '../interfaces/other.interface';
+
+import { getParticipant } from '../utils';
 
 const createTitle = (session: SessionStore) => {
   const _title = $('<p>').addClass('session-title__text').text('Session');
-  const _lp = $('<p>').addClass('session-title__score');
+  const _kda = $('<p>').addClass('session-title__kda');
 
-  const score = (session.startLP - session.currentLP) * -1;
+  let kda = session.kda.reduce((sum, kda) => sum + kda, 0);
 
-  _lp.text(`${score > 0 ? '+' : ''}${score}LP`);
+  kda === 0 ? 0 : (kda = Number(kda.toFixed(1)));
 
-  if (score > 0) _lp.addClass('win');
-  else if (score < 0) _lp.addClass('loss');
-  else _lp.removeClass('win').removeClass('loss');
+  _kda.text(`KDA: ${kda}`);
 
-  return $('<div>').addClass('session-title').append([_title, _lp]);
+  return $('<div>').addClass('session-title').append([_title, _kda]);
 };
 
 const createWinTotalLossStats = (user: User, session: SessionStore) => {
@@ -67,7 +66,7 @@ const createMatchList = (assets: Assets, user: User, session: SessionStore) => {
   return __list;
 };
 
-export default async (assets: Assets, dataset: Dataset, session: SessionStore) => {
+export default async (assets: Assets, dataset: Dataset, session: SessionStore, firstRender?: boolean) => {
   return new Promise<Array<JQuery<HTMLElement>>>((resolve, reject) => {
     if (!dataset.character || !dataset.summoner || !dataset.user)
       return reject('No character, summoner, or user found');

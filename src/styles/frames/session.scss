@@ -13,20 +13,9 @@
 
       padding: 0 4px;
 
-      &__text {
+      &__text,
+      &__kda {
         color: var(--white);
-      }
-
-      &__score {
-        color: var(--white);
-
-        &.loss {
-          color: var(--red600);
-        }
-
-        &.win {
-          color: var(--green);
-        }
       }
     }
 

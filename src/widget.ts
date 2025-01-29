@@ -20,6 +20,8 @@ import {
 
 import requests from './requests';
 
+import { getParticipant } from './utils';
+
 const widget = $('.widget').addClass('loading');
 
 const border = {
@@ -54,8 +56,7 @@ const dataset: Dataset = {
 
 const sessionstore: SessionStore = {
   matches: [],
-  startLP: 0,
-  currentLP: 0,
+  kda: [],
 };
 
 /**
@@ -88,23 +89,23 @@ const fetchData = async (firstRender?: boolean) => {
 
       if (!dataset.character) return reject('No character found');
 
-      firstRender
-        ? ((sessionstore.startLP = dataset.character.leaguePoints),
-          (sessionstore.currentLP = dataset.character.leaguePoints))
-        : (sessionstore.currentLP = dataset.character.leaguePoints);
-
       const matchIds = await requests.match.getMatchList(dataset.fields, dataset.summoner.puuid);
       if (Object.hasOwn(matchIds.data, 'status_code')) return reject((matchIds.data as RiotError).message);
       else dataset.matcheIds = matchIds.data as string[];
 
       await Promise.all(
         dataset.matcheIds.map(async (matchId) => {
-          if (!dataset.matches.some((m) => m.metadata.matchId === matchId) && dataset.fields) {
+          if (!dataset.matches.some((m) => m.metadata.matchId === matchId) && dataset.fields && dataset.user) {
             const match = await requests.match.getMatchById(dataset.fields, matchId);
+            const participant = getParticipant(dataset.user, match.data as Match);
+
             if (Object.hasOwn(match.data, 'status_code')) return reject((match.data as RiotError).message);
             else dataset.matches.push(match.data as Match);
 
-            if (!firstRender) sessionstore.matches.unshift(match.data as Match);
+            if (!firstRender && participant) {
+              sessionstore.kda.push(participant.challenges.kda);
+              sessionstore.matches.unshift(match.data as Match);
+            }
           }
         })
       );
@@ -176,7 +177,7 @@ const createFrame = (className: string, node: JQuery<HTMLElement>[]) => {
   return _frame.append(_content);
 };
 
-const frames = async () => {
+const frames = async (firstRender?: boolean) => {
   if (!assets || !dataset.character || !dataset.fields) return;
 
   const _row = $('<div>').addClass('row');
@@ -189,7 +190,7 @@ const frames = async () => {
     const _matches = await matches(assets, dataset);
     _frames.push(createFrame('matches', _matches));
 
-    const _session = await session(assets, dataset, sessionstore);
+    const _session = await session(assets, dataset, sessionstore, firstRender);
     _frames.push(createFrame('session', _session));
   } catch (error: any) {
     //
@@ -212,7 +213,7 @@ const factory = async (firstRender?: boolean) => {
   try {
     await fetchData(firstRender);
 
-    const F = await frames();
+    const F = await frames(firstRender);
     if (!F) return new Error('No frames created');
 
     const timer = (F.countFrames - 1) * (dataset.fields.pauseDuration + dataset.fields.transitionDuration) * 15000;

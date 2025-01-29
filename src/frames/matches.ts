@@ -1,10 +1,8 @@
 import { Assets } from '../interfaces/other.interface';
-import { Dataset, User } from '../interfaces/other.interface';
-import { Match } from '../interfaces/match.interface';
+import { Dataset } from '../interfaces/other.interface';
 import { Participant } from '../interfaces/match.interface';
 
-export const getParticipant = (user: User, match: Match) =>
-  match.info.participants.find((p) => p.riotIdGameName === user.gameName && p.riotIdTagline === user.tagLine);
+import { getParticipant } from '../utils';
 
 /**
  * Frame elements

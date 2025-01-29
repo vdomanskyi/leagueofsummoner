@@ -97,8 +97,7 @@ export interface Dataset {
 
 export interface SessionStore {
   matches: Match[];
-  startLP: number;
-  currentLP: number;
+  kda: number[];
 }
 
 export enum RANKED_QUEUE {
